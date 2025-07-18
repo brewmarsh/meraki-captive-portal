@@ -40,7 +40,8 @@ This is a containerized web application for capturing client data from a Meraki 
 
 1.  **Configure your Meraki network:**
     -   In your Meraki dashboard, go to **Wireless > Configure > Splash page**.
-    -   Set the **Custom splash URL** to the address of your running application (e.g., `http://your-server-ip:5001`).
+-   Set the **Custom splash URL** to the address of your running application (e.g., `http://your-server-ip:22787`).
+-   For more information on configuring a custom splash URL, see the [Meraki documentation](https://documentation.meraki.com/MR/Splash_Page/Configuring_a_Custom-Hosted_Splash_Page).
     -   Meraki will append query parameters like `client_mac` and `base_grant_url` to this URL.
 2.  **Connect a device:**
     -   Connect a device to your guest Wi-Fi network.
