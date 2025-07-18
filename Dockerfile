@@ -17,5 +17,6 @@ COPY . .
 EXPOSE 5001
 
 # Run the application
-CMD ["flask", "db", "upgrade"]
-CMD ["gunicorn", "--bind", "0.0.0.0:5001", "run:app"]
+COPY entrypoint.sh /usr/src/app/
+RUN chmod +x /usr/src/app/entrypoint.sh
+CMD ["/usr/src/app/entrypoint.sh"]
