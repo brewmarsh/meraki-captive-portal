@@ -51,3 +51,35 @@ def connect():
     """
     redirect_url = session.get('redirect_url', 'http://www.google.com')
     return redirect(redirect_url)
+
+import ipaddress
+import os
+
+@bp.before_request
+def restrict_admin_access():
+    if request.path == '/admin':
+        allowed_subnet = os.environ.get('ADMIN_SUBNET')
+        if allowed_subnet:
+            try:
+                # Get the real IP address from the X-Forwarded-For header if present
+                if 'X-Forwarded-For' in request.headers:
+                    remote_addr = ipaddress.ip_address(request.headers.getlist("X-Forwarded-For")[0].split(',')[0])
+                else:
+                    remote_addr = ipaddress.ip_address(request.remote_addr)
+
+                allowed_network = ipaddress.ip_network(allowed_subnet)
+                if remote_addr not in allowed_network:
+                    return "Access denied.", 403
+            except ValueError:
+                # Log this error, as it's a configuration issue
+                current_app.logger.error(f"Invalid ADMIN_SUBNET: {allowed_subnet}")
+                return "Internal server error.", 500
+
+@bp.route('/admin')
+def admin():
+    """
+    The admin page, which displays some basic stats from the database.
+    """
+    total_clients = Client.query.count()
+    clients = Client.query.order_by(Client.last_seen.desc()).limit(10).all()
+    return render_template('admin.html', total_clients=total_clients, clients=clients)
