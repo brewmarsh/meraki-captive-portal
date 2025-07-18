@@ -55,6 +55,8 @@ def connect():
 import ipaddress
 import os
 
+from flask import send_from_directory
+
 @bp.before_request
 def restrict_admin_access():
     if request.path == '/admin':
@@ -69,7 +71,7 @@ def restrict_admin_access():
 
                 allowed_network = ipaddress.ip_network(allowed_subnet)
                 if remote_addr not in allowed_network:
-                    return "Access denied.", 403
+                    return send_from_directory(os.path.join(current_app.root_path, 'static', 'images'), 'access_denied.png')
             except ValueError:
                 # Log this error, as it's a configuration issue
                 current_app.logger.error(f"Invalid ADMIN_SUBNET: {allowed_subnet}")
