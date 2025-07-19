@@ -1,0 +1,26 @@
+services:
+  web:
+    build: .
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      - FLASK_APP=run.py
+      - FLASK_ENV=production
+      - DATABASE_URL=postgresql://user:password@db:5432/mydatabase
+      - SECRET_KEY=supersecretkey
+      - PORT=${PORT}
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - db
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=mydatabase
+
+volumes:
+  postgres_data:
