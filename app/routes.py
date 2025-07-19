@@ -83,7 +83,7 @@ def restrict_admin_access():
                 logging.debug(f"Remote address: {remote_addr}")
                 logging.debug(f"Allowed subnet: {allowed_subnet}")
 
-                allowed_network = ipaddress.ip_network(allowed_subnet)
+                allowed_network = ipaddress.ip_network(allowed_subnet, strict=False)
                 if remote_addr not in allowed_network:
                     logging.warning(f"Admin access denied for {remote_addr}")
                     return send_from_directory(os.path.join(current_app.root_path, 'static', 'images'), 'access_denied.png')
