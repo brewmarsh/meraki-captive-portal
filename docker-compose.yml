@@ -9,6 +9,7 @@ services:
       - DATABASE_URL=postgresql://user:password@db:5432/mydatabase
       - SECRET_KEY=supersecretkey
       - PORT=${PORT}
+      - ADMIN_SUBNET=${ADMIN_SUBNET}
     volumes:
       - .:/usr/src/app
     depends_on:
