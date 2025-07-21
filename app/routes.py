@@ -64,7 +64,7 @@ def connect():
     This route is hit after the user clicks "connect" or the timer runs out.
     It redirects the user to their original destination.
     """
-    redirect_url = session.get('redirect_url', 'http://www.google.com')
+    redirect_url = session.get('redirect_url', 'https://www.reddit.com')
     logging.info(f"Redirecting user to {redirect_url}")
     return redirect(redirect_url)
 

@@ -18,9 +18,8 @@
             <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
         </div>
         <h1>Welcome to Our Guest Wi-Fi</h1>
-        <p>You will be automatically connected in <span id="timer">10</span> seconds.</p>
+        <p>Click the button below to connect.</p>
         <a href="{{ url_for('routes.connect') }}" class="connect-button">Connect Now</a>
     </div>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
