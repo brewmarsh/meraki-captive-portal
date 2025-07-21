@@ -109,7 +109,8 @@ def add_firewall_rule(api_key, network_id):
             'policy': 'allow',
             'protocol': 'tcp',
             'destPort': os.environ.get('EXTERNAL_PORT', os.environ.get('PORT', 5001)),
-            'destCidr': 'any'
+            'destCidr': 'any',
+            'srcCidr': 'any'
         }
         rules['rules'].insert(0, new_rule)
         dashboard.appliance.updateNetworkApplianceFirewallL3FirewallRules(network_id, rules=rules['rules'])
