@@ -16,6 +16,7 @@ services:
       - MERAKI_API_KEY=${MERAKI_API_KEY}
       - MERAKI_ORG_ID=${MERAKI_ORG_ID}
       - MERAKI_SSID_NAMES=${MERAKI_SSID_NAMES}
+      - LAN_IP=${LAN_IP}
     volumes:
       - .:/usr/src/app
     depends_on:
