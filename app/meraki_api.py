@@ -50,7 +50,7 @@ def add_firewall_rule(api_key, network_id):
             'comment': 'Allow traffic to captive portal',
             'policy': 'allow',
             'protocol': 'tcp',
-            'destPort': os.environ.get('PORT', 5001),
+            'destPort': os.environ.get('EXTERNAL_PORT', os.environ.get('PORT', 5001)),
             'destCidr': 'any'
         }
         rules['rules'].insert(0, new_rule)
@@ -77,9 +77,11 @@ def update_splash_page_settings(api_key, org_id, ssid_names):
             for ssid in ssids:
                 if ssid['name'] in ssid_names:
                     logging.info(f"Updating splash page for SSID '{ssid['name']}' in network '{network['name']}'")
+                    external_url = get_external_url(api_key, org_id, network['id'])
+                    external_port = os.environ.get('EXTERNAL_PORT', os.environ.get('PORT', 5001))
                     splash_page_settings = {
                         'splashPage': 'custom',
-                        'splashUrl': f"http://{os.environ.get('PUBLIC_IP', 'localhost')}:{os.environ.get('PORT', 5001)}/"
+                        'splashUrl': f"http://{external_url}:{external_port}/"
                     }
                     dashboard.wireless.updateNetworkWirelessSsidSplashSettings(
                         networkId=network['id'],

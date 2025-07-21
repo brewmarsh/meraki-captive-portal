@@ -117,12 +117,32 @@ def admin():
                 network_id = networks[0]['id']
                 external_url = get_external_url(api_key, meraki_org_id, network_id)
 
+        auto_refresh_seconds = os.environ.get('AUTO_REFRESH_SECONDS', 120)
+
         return render_template('admin.html',
                                  total_clients=total_clients,
                                  clients=clients,
                                  meraki_org_id=meraki_org_id,
                                  meraki_ssid_names=meraki_ssid_names,
-                                 external_url=external_url)
+                                 external_url=external_url,
+                                 auto_refresh_seconds=auto_refresh_seconds)
     except Exception as e:
         logging.error(f"Error loading admin page: {e}", exc_info=True)
         return "An error occurred while loading the admin page.", 500
+
+@bp.route('/set_refresh', methods=['POST'])
+def set_refresh():
+    """
+    Set the refresh interval in the session.
+    """
+    refresh_interval = request.form.get('refresh_interval')
+    if refresh_interval:
+        session['auto_refresh_seconds'] = refresh_interval
+    return redirect(url_for('routes.admin'))
+
+@bp.route('/force_refresh', methods=['POST'])
+def force_refresh():
+    """
+    Force a refresh of the admin page.
+    """
+    return redirect(url_for('routes.admin'))
