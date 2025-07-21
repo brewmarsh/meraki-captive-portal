@@ -88,3 +88,27 @@ This document outlines the functional and non-functional requirements for the Me
 -   **TODO3.9:** Integrate `black` and `isort` into the CI/CD pipeline to enforce consistent code formatting.
 -   **TODO3.10:** Integrate `bandit` into the CI/CD pipeline to perform automated security analysis.
 -   **TODO3.11:** Integrate `mypy` into the CI/CD pipeline to perform static type checking.
+=======
+-   **NFR2.1.2:** The application shall be able to handle a high volume of concurrent connections.
+
+### 2.2. Security
+
+-   **NFR2.2.1:** Access to the admin dashboard shall be restricted to a configurable IP subnet.
+-   **NFR2.2.2:** The application shall not store any personally identifiable information (PII) other than the client's MAC address, IP address, and user agent.
+-   **NFR2.2.3:** The application shall log all connection errors to a file for debugging purposes.
+
+### 2.3. Usability
+
+-   **NFR2.3.1:** The splash page shall be easy to understand and use.
+-   **NFR2.3.2:** The admin dashboard shall provide a clear and concise overview of the system's status.
+
+### 2.4. Deployment
+
+-   **NFR2.4.1:** The application shall be containerized using Docker for easy deployment.
+-   **NFR2.4.2:** The application shall use Docker Compose to manage the application and database containers.
+-   **NFR2.4.3:** The application shall include a CI/CD workflow for linting and versioning.
+
+### 2.5. Customization
+
+-   **NFR2.5.1:** The application's logo, styling, and timer duration shall be easily customizable.
+-   **NFR2.5.2:** The application's configuration shall be managed through environment variables.
