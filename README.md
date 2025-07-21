@@ -48,6 +48,17 @@ This is a containerized web application for capturing client data from a Meraki 
     -   The device should be redirected to the captive portal splash page.
     -   The client's data will be captured and stored in the database.
 
+### Meraki API Integration
+
+This application can optionally use the Meraki API to automatically configure the splash page URL for one or more SSIDs. To enable this feature, set the following environment variables in your `.env` file:
+
+-   `MERAKI_API_ENABLED=true`
+-   `MERAKI_API_KEY`: Your Meraki API key.
+-   `MERAKI_ORG_ID`: Your Meraki organization ID.
+-   `MERAKI_SSID_NAMES`: A comma-separated list of SSIDs to apply the splash page to.
+
+When the application starts, it will use the Meraki API to update the splash page settings for the specified SSIDs.
+
 ## Customization
 
 -   **Logo:** Replace `app/static/images/logo.png` with your own logo. The recommended size is 150x150 pixels.

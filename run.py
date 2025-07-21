@@ -1,9 +1,6 @@
 from app import create_app
 import os
 import logging
-from dotenv import load_dotenv
-
-load_dotenv()
 
 # Configure logging
 log_level = os.environ.get('LOG_LEVEL', 'INFO').upper()
