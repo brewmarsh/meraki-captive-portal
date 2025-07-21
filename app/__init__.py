@@ -8,7 +8,7 @@ import logging
 db = SQLAlchemy()
 migrate = Migrate()
 
-from .meraki_api import update_splash_page_settings, add_firewall_rule, add_port_forwarding_rule
+from .meraki_api import update_splash_page_settings, add_firewall_rule, add_port_forwarding_rule, verify_port_forwarding_rule
 
 def create_app():
     """Create and configure an instance of the Flask application."""
@@ -48,7 +48,8 @@ def create_app():
             if networks:
                 network_id = networks[0]['id']
                 add_firewall_rule(api_key, network_id)
-                add_port_forwarding_rule(api_key, network_id)
+                if not verify_port_forwarding_rule(api_key, network_id):
+                    add_port_forwarding_rule(api_key, network_id)
             update_splash_page_settings(api_key, org_id, ssid_names)
         else:
             logging.warning("Meraki API is enabled, but one or more required environment variables are missing.")
