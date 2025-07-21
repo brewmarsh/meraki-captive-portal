@@ -38,6 +38,28 @@ def get_external_url(api_key, org_id, network_id):
         logging.error(f"Meraki API error getting external URL: {e}")
         return None
 
+def add_port_forwarding_rule(api_key, network_id):
+    """
+    Add a port forwarding rule to the appliance to forward traffic to the captive portal.
+    """
+    logging.info("Initializing Meraki dashboard API to add port forwarding rule")
+    dashboard = meraki.DashboardAPI(api_key)
+    try:
+        rules = dashboard.appliance.getNetworkApplianceFirewallPortForwardingRules(network_id)
+        new_rule = {
+            'name': 'Captive Portal',
+            'lanIp': '127.0.0.1', # This should be the IP of the server running the app
+            'publicPort': os.environ.get('EXTERNAL_PORT', os.environ.get('PORT', 5001)),
+            'localPort': os.environ.get('PORT', 5001),
+            'protocol': 'tcp',
+            'allowedIps': ['any']
+        }
+        rules['rules'].insert(0, new_rule)
+        dashboard.appliance.updateNetworkApplianceFirewallPortForwardingRules(network_id, rules=rules['rules'])
+        logging.info("Port forwarding rule added successfully")
+    except meraki.APIError as e:
+        logging.error(f"Meraki API error adding port forwarding rule: {e}")
+
 def add_firewall_rule(api_key, network_id):
     """
     Add a firewall rule to the appliance to allow traffic to the captive portal.
