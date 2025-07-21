@@ -47,7 +47,6 @@ def create_app():
             networks = dashboard.organizations.getOrganizationNetworks(org_id)
             if networks:
                 network_id = networks[0]['id']
-                add_firewall_rule(api_key, network_id)
                 if not verify_port_forwarding_rule(api_key, network_id):
                     add_port_forwarding_rule(api_key, network_id)
             update_splash_page_settings(api_key, org_id, ssid_names)

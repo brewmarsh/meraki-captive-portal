@@ -78,13 +78,18 @@ def add_port_forwarding_rule(api_key, network_id):
     """
     Add a port forwarding rule to the appliance to forward traffic to the captive portal.
     """
+    lan_ip = os.environ.get('LAN_IP')
+    if not lan_ip:
+        logging.error("LAN_IP environment variable not set, cannot add port forwarding rule.")
+        return
+
     logging.info("Initializing Meraki dashboard API to add port forwarding rule")
     dashboard = meraki.DashboardAPI(api_key)
     try:
         rules = dashboard.appliance.getNetworkApplianceFirewallPortForwardingRules(network_id)
         new_rule = {
             'name': 'Captive Portal',
-            'lanIp': os.environ.get('LAN_IP'),
+            'lanIp': lan_ip,
             'publicPort': os.environ.get('EXTERNAL_PORT', os.environ.get('PORT', 5001)),
             'localPort': os.environ.get('PORT', 5001),
             'protocol': 'tcp',
