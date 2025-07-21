@@ -4,7 +4,7 @@ services:
     ports:
       - "${PORT}:${PORT}"
     env_file:
-      - .env.example
+      - .env
     environment:
       - FLASK_APP=run.py
       - FLASK_ENV=production
