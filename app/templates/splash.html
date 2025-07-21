@@ -5,11 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to Our Wi-Fi</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
 </head>
 <body>
     <div class="container">
         <div class="logo">
-            <!-- Placeholder for logo: 150x150 pixels -->
+            <!--
+                Placeholder for logo.
+                Recommended size: 120x120 pixels
+                Recommended format: PNG with transparent background
+            -->
             <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
         </div>
         <h1>Welcome to Our Guest Wi-Fi</h1>

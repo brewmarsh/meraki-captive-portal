@@ -1,10 +1,10 @@
-import meraki
 from flask import Blueprint, render_template, request, redirect, url_for, current_app, session
 from .models import Client
 from . import db
 import logging
 from datetime import datetime
 from .meraki_api import get_external_url, verify_port_forwarding_rule, verify_splash_page
+from .meraki_dashboard import get_dashboard
 
 bp = Blueprint('routes', __name__)
 
@@ -112,20 +112,19 @@ def admin():
 
         meraki_org_id = os.environ.get('MERAKI_ORG_ID')
         meraki_ssid_names = os.environ.get('MERAKI_SSID_NAMES')
-        api_key = os.environ.get('MERAKI_API_KEY')
         external_url = None
         port_forwarding_rule_active = False
         splash_page_set_correctly = False
-        if api_key and meraki_org_id:
-            dashboard = meraki.DashboardAPI(api_key)
+        dashboard = get_dashboard()
+        if dashboard and meraki_org_id:
             networks = dashboard.organizations.getOrganizationNetworks(meraki_org_id)
             if networks:
                 network_id = networks[0]['id']
-                external_url = get_external_url(api_key, meraki_org_id, network_id)
-                port_forwarding_rule_active = verify_port_forwarding_rule(api_key, network_id)
+                external_url = get_external_url(dashboard, meraki_org_id, network_id)
+                port_forwarding_rule_active = verify_port_forwarding_rule(dashboard, network_id)
                 if meraki_ssid_names:
                     # For simplicity, we only check the first SSID
-                    splash_page_set_correctly = verify_splash_page(api_key, network_id, meraki_ssid_names.split(',')[0])
+                    splash_page_set_correctly = verify_splash_page(dashboard, network_id, meraki_ssid_names.split(',')[0])
 
         auto_refresh_seconds = os.environ.get('AUTO_REFRESH_SECONDS', 120)
 

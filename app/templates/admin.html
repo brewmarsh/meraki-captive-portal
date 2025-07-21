@@ -6,84 +6,67 @@
     <meta http-equiv="refresh" content="{{ auto_refresh_seconds }}">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
 </head>
 <body>
-    <div class="container">
+    <div class="admin-container">
         <h1>Admin Dashboard</h1>
-        <div style="text-align: left;">
-            <h2>Meraki Info</h2>
-            <p>
-                {% if meraki_org_id %}
-                    <span style="color: green;">&#10004;</span>
-                {% else %}
-                    <span style="color: red;">&#10008;</span>
-                {% endif %}
-                Organization ID: {{ meraki_org_id }}
-            </p>
-            <p>
-                {% if meraki_ssid_names %}
-                    <span style="color: green;">&#10004;</span>
-                {% else %}
-                    <span style="color: red;">&#10008;</span>
-                {% endif %}
-                SSIDs: {{ meraki_ssid_names }}
-            </p>
-            <p>
-                {% if external_url and external_url != 'Appliance not found' and external_url != 'Not available' %}
-                    <span style="color: green;">&#10004;</span>
-                {% else %}
-                    <span style="color: red;">&#10008;</span>
-                {% endif %}
-                External URL: {{ external_url }}
-            </p>
-            <p>
-                {% if port_forwarding_rule_active %}
-                    <span style="color: green;">&#10004;</span>
-                {% else %}
-                    <span style="color: red;">&#10008;</span>
-                {% endif %}
-                Port Forwarding Rule: {% if port_forwarding_rule_active %}Active{% else %}Inactive{% endif %}
-            </p>
-            <p>
-                {% if splash_page_set_correctly %}
-                    <span style="color: green;">&#10004;</span>
-                {% else %}
-                    <span style="color: red;">&#10008;</span>
-                {% endif %}
-                Splash Page: {% if splash_page_set_correctly %}Set Correctly{% else %}Not Set Correctly{% endif %}
-            </p>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Clients</h3>
+                <p>{{ total_clients }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Meraki Status</h3>
+                <p>
+                    {% if meraki_org_id and meraki_ssid_names and external_url and external_url != 'Appliance not found' and external_url != 'Not available' and port_forwarding_rule_active and splash_page_set_correctly %}
+                        <span style="color: green;">●</span> Connected
+                    {% else %}
+                        <span style="color: red;">●</span> Disconnected
+                    {% endif %}
+                </p>
+            </div>
+            <div class="stat-card">
+                <h3>Auto-Refresh</h3>
+                <p>{{ auto_refresh_seconds }} seconds</p>
+            </div>
         </div>
-        <h2>Settings</h2>
-        <form action="{{ url_for('routes.set_refresh') }}" method="post">
-            <label for="refresh_interval">Refresh Interval (seconds):</label>
-            <input type="number" id="refresh_interval" name="refresh_interval" value="{{ auto_refresh_seconds }}">
-            <input type="submit" value="Set Refresh">
-        </form>
-        <form action="{{ url_for('routes.force_refresh') }}" method="post">
-            <input type="submit" value="Force Refresh">
-        </form>
-        <h2>Total Clients: {{ total_clients }}</h2>
-        <h3>Recent Clients</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>MAC Address</th>
-                    <th>IP Address</th>
-                    <th>First Seen</th>
-                    <th>Last Seen</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for client in clients %}
-                <tr>
-                    <td>{{ client.mac_address }}</td>
-                    <td>{{ client.ip_address }}</td>
-                    <td>{{ client.first_seen.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                    <td>{{ client.last_seen.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+
+        <div class="client-list">
+            <h2>Recent Clients</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>MAC Address</th>
+                        <th>IP Address</th>
+                        <th>User Agent</th>
+                        <th>Last Seen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client in clients %}
+                    <tr>
+                        <td>{{ client.mac_address }}</td>
+                        <td>{{ client.ip_address }}</td>
+                        <td>{{ client.user_agent | truncate(30) }}</td>
+                        <td>{{ client.last_seen.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="refresh-controls">
+            <form action="{{ url_for('routes.set_refresh') }}" method="post" style="display: inline-block;">
+                <label for="refresh_interval">Refresh Interval:</label>
+                <input type="number" id="refresh_interval" name="refresh_interval" value="{{ auto_refresh_seconds }}" min="10">
+                <input type="submit" value="Set">
+            </form>
+            <form action="{{ url_for('routes.force_refresh') }}" method="post" style="display: inline-block;">
+                <input type="submit" value="Force Refresh">
+            </form>
+        </div>
     </div>
 </body>
 </html>
