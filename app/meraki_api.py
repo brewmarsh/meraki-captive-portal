@@ -38,6 +38,42 @@ def get_external_url(api_key, org_id, network_id):
         logging.error(f"Meraki API error getting external URL: {e}")
         return None
 
+def verify_port_forwarding_rule(api_key, network_id):
+    """
+    Verify that the port forwarding rule is active.
+    """
+    logging.info("Initializing Meraki dashboard API to verify port forwarding rule")
+    dashboard = meraki.DashboardAPI(api_key)
+    try:
+        rules = dashboard.appliance.getNetworkApplianceFirewallPortForwardingRules(network_id)
+        for rule in rules['rules']:
+            if rule['name'] == 'Captive Portal':
+                return True
+        return False
+    except meraki.APIError as e:
+        logging.error(f"Meraki API error verifying port forwarding rule: {e}")
+        return False
+
+def verify_splash_page(api_key, network_id, ssid_name):
+    """
+    Verify that the splash page is set correctly for a given SSID.
+    """
+    logging.info(f"Initializing Meraki dashboard API to verify splash page for SSID '{ssid_name}'")
+    dashboard = meraki.DashboardAPI(api_key)
+    try:
+        ssids = dashboard.wireless.getNetworkWirelessSsids(network_id)
+        for ssid in ssids:
+            if ssid['name'] == ssid_name:
+                splash_settings = dashboard.wireless.getNetworkWirelessSsidSplashSettings(network_id, ssid['number'])
+                external_url = get_external_url(api_key, os.environ.get('MERAKI_ORG_ID'), network_id)
+                external_port = os.environ.get('EXTERNAL_PORT', os.environ.get('PORT', 5001))
+                expected_splash_url = f"http://{external_url}:{external_port}/"
+                return splash_settings.get('splashUrl') == expected_splash_url
+        return False
+    except meraki.APIError as e:
+        logging.error(f"Meraki API error verifying splash page: {e}")
+        return False
+
 def add_port_forwarding_rule(api_key, network_id):
     """
     Add a port forwarding rule to the appliance to forward traffic to the captive portal.

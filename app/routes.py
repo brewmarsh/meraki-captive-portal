@@ -4,7 +4,7 @@ from .models import Client
 from . import db
 import logging
 from datetime import datetime
-from .meraki_api import get_external_url
+from .meraki_api import get_external_url, verify_port_forwarding_rule, verify_splash_page
 
 bp = Blueprint('routes', __name__)
 
@@ -110,12 +110,18 @@ def admin():
         meraki_ssid_names = os.environ.get('MERAKI_SSID_NAMES')
         api_key = os.environ.get('MERAKI_API_KEY')
         external_url = None
+        port_forwarding_rule_active = False
+        splash_page_set_correctly = False
         if api_key and meraki_org_id:
             dashboard = meraki.DashboardAPI(api_key)
             networks = dashboard.organizations.getOrganizationNetworks(meraki_org_id)
             if networks:
                 network_id = networks[0]['id']
                 external_url = get_external_url(api_key, meraki_org_id, network_id)
+                port_forwarding_rule_active = verify_port_forwarding_rule(api_key, network_id)
+                if meraki_ssid_names:
+                    # For simplicity, we only check the first SSID
+                    splash_page_set_correctly = verify_splash_page(api_key, network_id, meraki_ssid_names.split(',')[0])
 
         auto_refresh_seconds = os.environ.get('AUTO_REFRESH_SECONDS', 120)
 
@@ -125,7 +131,9 @@ def admin():
                                  meraki_org_id=meraki_org_id,
                                  meraki_ssid_names=meraki_ssid_names,
                                  external_url=external_url,
-                                 auto_refresh_seconds=auto_refresh_seconds)
+                                 auto_refresh_seconds=auto_refresh_seconds,
+                                 port_forwarding_rule_active=port_forwarding_rule_active,
+                                 splash_page_set_correctly=splash_page_set_correctly)
     except Exception as e:
         logging.error(f"Error loading admin page: {e}", exc_info=True)
         return "An error occurred while loading the admin page.", 500
