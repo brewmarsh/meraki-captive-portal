@@ -57,9 +57,10 @@ This document outlines the functional and non-functional requirements for the Me
 
 ### 2.4. Deployment
 
--   **NFR2.4.1:** The application shall be containerized using Docker for easy and consistent deployment.
--   **NFR2.4.2:** The application shall use Docker Compose to manage the application and database containers.
--   **NFR2.4.3:** The application shall include a CI/CD workflow for automated linting and versioning.
+-   **NFR2.4.1:** The application shall be containerized using Docker for easy and consistent deployment. The Docker image shall be optimized for size and security by using a multi-stage build and running as a non-root user.
+-   **NFR2.4.2:** The application shall use Docker Compose to manage the application and database containers in a development environment.
+-   **NFR2.4.3:** The application shall include a CI/CD workflow for automated linting, testing, and versioning.
+-   **NFR2.4.4:** The CI/CD workflow shall include a step to scan the Docker image for known vulnerabilities.
 
 ### 2.5. Customization
 
@@ -69,13 +70,21 @@ This document outlines the functional and non-functional requirements for the Me
 ### 2.6. Reliability and Quality
 
 -   **NFR2.6.1:** The application shall be robust and handle unexpected errors gracefully without crashing.
--   **NFR2.6.2:** The application shall include a comprehensive test suite to ensure the correctness of its features.
+-   **NFR2.6.2:** The application shall include a comprehensive test suite with high code coverage to ensure the correctness of its features.
 -   **NFR2.6.3:** The codebase shall adhere to the PEP 8 style guide for Python code.
 -   **NFR2.6.4:** The application shall include a mechanism for database migrations to manage changes to the database schema.
+-   **NFR2.6.5:** The CI/CD pipeline shall enforce code quality standards through automated linting and static analysis. The pipeline shall use `flake8` for linting, `black` for code formatting, `isort` for import sorting, `bandit` for security analysis, and `mypy` for static type checking.
 
 ## 3. TODO
 
--   **TODO3.1:** Implement a more robust testing suite with increased coverage.
+-   **TODO3.1:** Implement a more robust testing suite with increased coverage and end-to-end tests.
 -   **TODO3.2:** Add support for additional authentication methods (e.g., social logins, email/password).
 -   **TODO3.3:** Enhance the admin dashboard with data visualization features.
 -   **TODO3.4:** Implement internationalization (i18n) for the user-facing pages.
+-   **TODO3.5:** Implement a multi-stage Docker build to reduce the production image size.
+-   **TODO3.6:** Configure the Docker container to run as a non-root user to improve security.
+-   **TODO3.7:** Add a Dockerfile linter (e.g., Hadolint) to the CI/CD pipeline.
+-   **TODO3.8:** Integrate a vulnerability scanner (e.g., Trivy, Snyk) into the CI/CD pipeline to scan the Docker image for known vulnerabilities.
+-   **TODO3.9:** Integrate `black` and `isort` into the CI/CD pipeline to enforce consistent code formatting.
+-   **TODO3.10:** Integrate `bandit` into the CI/CD pipeline to perform automated security analysis.
+-   **TODO3.11:** Integrate `mypy` into the CI/CD pipeline to perform static type checking.
