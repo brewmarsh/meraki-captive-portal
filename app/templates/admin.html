@@ -10,10 +10,33 @@
 <body>
     <div class="container">
         <h1>Admin Dashboard</h1>
-        <h2>Meraki Info</h2>
-        <p>Organization ID: {{ meraki_org_id }}</p>
-        <p>SSIDs: {{ meraki_ssid_names }}</p>
-        <p>External URL: {{ external_url }}</p>
+        <div style="text-align: left;">
+            <h2>Meraki Info</h2>
+            <p>
+                {% if meraki_org_id %}
+                    <span style="color: green;">&#10004;</span>
+                {% else %}
+                    <span style="color: red;">&#10008;</span>
+                {% endif %}
+                Organization ID: {{ meraki_org_id }}
+            </p>
+            <p>
+                {% if meraki_ssid_names %}
+                    <span style="color: green;">&#10004;</span>
+                {% else %}
+                    <span style="color: red;">&#10008;</span>
+                {% endif %}
+                SSIDs: {{ meraki_ssid_names }}
+            </p>
+            <p>
+                {% if external_url and external_url != 'Appliance not found' and external_url != 'Not available' %}
+                    <span style="color: green;">&#10004;</span>
+                {% else %}
+                    <span style="color: red;">&#10008;</span>
+                {% endif %}
+                External URL: {{ external_url }}
+            </p>
+        </div>
         <h2>Settings</h2>
         <form action="{{ url_for('routes.set_refresh') }}" method="post">
             <label for="refresh_interval">Refresh Interval (seconds):</label>
