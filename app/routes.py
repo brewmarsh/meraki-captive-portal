@@ -3,6 +3,7 @@ from .models import Client
 from . import db
 import logging
 from datetime import datetime
+from .meraki_api import get_external_url
 
 bp = Blueprint('routes', __name__)
 
@@ -106,12 +107,19 @@ def admin():
 
         meraki_org_id = os.environ.get('MERAKI_ORG_ID')
         meraki_ssid_names = os.environ.get('MERAKI_SSID_NAMES')
+        api_key = os.environ.get('MERAKI_API_KEY')
+        external_url = None
+        if api_key and meraki_org_id:
+            # A network ID is required to get the external URL, but we don't have one readily available here.
+            # We will pass None for now and address this in a future step.
+            external_url = get_external_url(api_key, meraki_org_id, None)
 
         return render_template('admin.html',
-                               total_clients=total_clients,
-                               clients=clients,
-                               meraki_org_id=meraki_org_id,
-                               meraki_ssid_names=meraki_ssid_names)
+                                 total_clients=total_clients,
+                                 clients=clients,
+                                 meraki_org_id=meraki_org_id,
+                                 meraki_ssid_names=meraki_ssid_names,
+                                 external_url=external_url)
     except Exception as e:
         logging.error(f"Error loading admin page: {e}", exc_info=True)
         return "An error occurred while loading the admin page.", 500

@@ -7,7 +7,7 @@ import logging
 db = SQLAlchemy()
 migrate = Migrate()
 
-from .meraki_api import update_splash_page_settings
+from .meraki_api import update_splash_page_settings, add_firewall_rule
 
 def create_app():
     """Create and configure an instance of the Flask application."""
@@ -40,6 +40,13 @@ def create_app():
 
         if api_key and org_id and ssid_names:
             logging.info("All Meraki environment variables are set, proceeding with splash page update.")
+            # We need a network ID to add a firewall rule. We will need to get this from the organization.
+            # This is a simplification for now.
+            dashboard = meraki.DashboardAPI(api_key)
+            networks = dashboard.organizations.getOrganizationNetworks(org_id)
+            if networks:
+                network_id = networks[0]['id']
+                add_firewall_rule(api_key, network_id)
             update_splash_page_settings(api_key, org_id, ssid_names)
         else:
             logging.warning("Meraki API is enabled, but one or more required environment variables are missing.")

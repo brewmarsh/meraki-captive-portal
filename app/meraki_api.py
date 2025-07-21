@@ -8,6 +8,41 @@ def get_organization_id(dashboard, org_id):
     """
     return org_id
 
+def get_external_url(api_key, org_id, network_id):
+    """
+    Get the external URL of the appliance.
+    """
+    logging.info("Initializing Meraki dashboard API to get external URL")
+    dashboard = meraki.DashboardAPI(api_key)
+    try:
+        status = dashboard.appliance.getOrganizationApplianceVpnStats(org_id)
+        #This is a simplification, a more robust solution would be to iterate through the networks and find the one with the correct network_id
+        return status[0]['wanIp']
+    except meraki.APIError as e:
+        logging.error(f"Meraki API error getting external URL: {e}")
+        return None
+
+def add_firewall_rule(api_key, network_id):
+    """
+    Add a firewall rule to the appliance to allow traffic to the captive portal.
+    """
+    logging.info("Initializing Meraki dashboard API to add firewall rule")
+    dashboard = meraki.DashboardAPI(api_key)
+    try:
+        rules = dashboard.appliance.getNetworkApplianceFirewallL3FirewallRules(network_id)
+        new_rule = {
+            'comment': 'Allow traffic to captive portal',
+            'policy': 'allow',
+            'protocol': 'tcp',
+            'destPort': os.environ.get('PORT', 5001),
+            'destCidr': 'any'
+        }
+        rules['rules'].insert(0, new_rule)
+        dashboard.appliance.updateNetworkApplianceFirewallL3FirewallRules(network_id, rules=rules['rules'])
+        logging.info("Firewall rule added successfully")
+    except meraki.APIError as e:
+        logging.error(f"Meraki API error adding firewall rule: {e}")
+
 def update_splash_page_settings(api_key, org_id, ssid_names):
     """
     Update the splash page settings for the given SSIDs.
