@@ -21,6 +21,10 @@ def splash():
         client_ip = request.args.get('client_ip')
         user_agent = request.headers.get('User-Agent')
 
+        if 'X-Forwarded-For' in request.headers:
+            external_ip = request.headers.getlist("X-Forwarded-For")[0].split(',')[0]
+            logging.info(f"External IP: {external_ip}")
+
         logging.debug(f"Request arguments: client_mac={client_mac}, client_ip={client_ip}")
         logging.debug(f"User-Agent: {user_agent}")
 
