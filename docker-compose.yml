@@ -2,7 +2,20 @@ services:
   web:
     build: .
     ports:
-      - "5001:5001"
+      - "${PORT}:${PORT}"
+    env_file:
+      - .env
+    environment:
+      - FLASK_APP=run.py
+      - FLASK_ENV=production
+      - DATABASE_URL=postgresql://user:password@db:5432/mydatabase
+      - SECRET_KEY=supersecretkey
+      - PORT=${PORT}
+      - ADMIN_SUBNET=${ADMIN_SUBNET}
+      - MERAKI_API_ENABLED=${MERAKI_API_ENABLED}
+      - MERAKI_API_KEY=${MERAKI_API_KEY}
+      - MERAKI_ORG_ID=${MERAKI_ORG_ID}
+      - MERAKI_SSID_NAMES=${MERAKI_SSID_NAMES}
     volumes:
       - .:/usr/src/app
     depends_on:
