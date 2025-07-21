@@ -48,7 +48,7 @@ def add_port_forwarding_rule(api_key, network_id):
         rules = dashboard.appliance.getNetworkApplianceFirewallPortForwardingRules(network_id)
         new_rule = {
             'name': 'Captive Portal',
-            'lanIp': '127.0.0.1', # This should be the IP of the server running the app
+            'lanIp': os.environ.get('LAN_IP'),
             'publicPort': os.environ.get('EXTERNAL_PORT', os.environ.get('PORT', 5001)),
             'localPort': os.environ.get('PORT', 5001),
             'protocol': 'tcp',
