@@ -8,6 +8,20 @@ def get_organization_id(dashboard, org_id):
     """
     return org_id
 
+def get_appliance_serial(dashboard, network_id):
+    """
+    Get the serial number of the appliance in a network.
+    """
+    try:
+        devices = dashboard.networks.getNetworkDevices(network_id)
+        for device in devices:
+            if 'MX' in device['model']:
+                return device['serial']
+        return None
+    except meraki.APIError as e:
+        logging.error(f"Meraki API error getting appliance serial: {e}")
+        return None
+
 def get_external_url(api_key, org_id, network_id):
     """
     Get the external URL of the appliance.
@@ -15,9 +29,11 @@ def get_external_url(api_key, org_id, network_id):
     logging.info("Initializing Meraki dashboard API to get external URL")
     dashboard = meraki.DashboardAPI(api_key)
     try:
-        status = dashboard.appliance.getOrganizationApplianceVpnStats(org_id)
-        #This is a simplification, a more robust solution would be to iterate through the networks and find the one with the correct network_id
-        return status[0]['wanIp']
+        serial = get_appliance_serial(dashboard, network_id)
+        if serial:
+            interface = dashboard.devices.getDeviceManagementInterface(serial)
+            return interface.get('wan1', {}).get('wanIp', 'Not available')
+        return "Appliance not found"
     except meraki.APIError as e:
         logging.error(f"Meraki API error getting external URL: {e}")
         return None

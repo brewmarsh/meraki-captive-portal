@@ -1,3 +1,4 @@
+import meraki
 from flask import Blueprint, render_template, request, redirect, url_for, current_app, session
 from .models import Client
 from . import db
@@ -110,9 +111,11 @@ def admin():
         api_key = os.environ.get('MERAKI_API_KEY')
         external_url = None
         if api_key and meraki_org_id:
-            # A network ID is required to get the external URL, but we don't have one readily available here.
-            # We will pass None for now and address this in a future step.
-            external_url = get_external_url(api_key, meraki_org_id, None)
+            dashboard = meraki.DashboardAPI(api_key)
+            networks = dashboard.organizations.getOrganizationNetworks(meraki_org_id)
+            if networks:
+                network_id = networks[0]['id']
+                external_url = get_external_url(api_key, meraki_org_id, network_id)
 
         return render_template('admin.html',
                                  total_clients=total_clients,
