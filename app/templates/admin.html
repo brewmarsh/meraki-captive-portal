@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="refresh" content="{{ auto_refresh_seconds }}">
-    <title>Admin Dashboard</title>
+    <title>Captive Portal Admin Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
 </head>
 <body>
     <div class="admin-container">
-        <h1>Admin Dashboard</h1>
+        <h1>Captive Portal Admin Dashboard</h1>
 
         <div class="stats-grid">
             <div class="stat-card">
@@ -26,6 +26,7 @@
                         <span style="color: red;">●</span> Disconnected
                     {% endif %}
                 </p>
+                <a href="{{ url_for('routes.meraki_status') }}">View Details</a>
             </div>
             <div class="stat-card">
                 <h3>Auto-Refresh</h3>

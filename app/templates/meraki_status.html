@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meraki Status</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+</head>
+<body>
+    <div class="admin-container">
+        <h1>Meraki Status</h1>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>API Key</h3>
+                <p>
+                    {% if meraki_api_key_set %}
+                        <span style="color: green;">●</span> Set
+                    {% else %}
+                        <span style="color: red;">●</span> Not Set
+                    {% endif %}
+                </p>
+            </div>
+            <div class="stat-card">
+                <h3>Organization ID</h3>
+                <p>
+                    {% if meraki_org_id %}
+                        <span style="color: green;">●</span> {{ meraki_org_id }}
+                    {% else %}
+                        <span style="color: red;">●</span> Not Set
+                    {% endif %}
+                </p>
+            </div>
+            <div class="stat-card">
+                <h3>SSID Names</h3>
+                <p>
+                    {% if meraki_ssid_names %}
+                        <span style="color: green;">●</span> {{ meraki_ssid_names }}
+                    {% else %}
+                        <span style="color: red;">●</span> Not Set
+                    {% endif %}
+                </p>
+            </div>
+            <div class="stat-card">
+                <h3>External URL</h3>
+                <p>
+                    {% if external_url and external_url != 'Appliance not found' and external_url != 'Not available' %}
+                        <span style="color: green;">●</span> {{ external_url }}
+                    {% else %}
+                        <span style="color: red;">●</span> {{ external_url }}
+                    {% endif %}
+                </p>
+            </div>
+            <div class="stat-card">
+                <h3>Port Forwarding Rule</h3>
+                <p>
+                    {% if port_forwarding_rule_active %}
+                        <span style="color: green;">●</span> Active
+                    {% else %}
+                        <span style="color: red;">●</span> Inactive
+                    {% endif %}
+                </p>
+            </div>
+            <div class="stat-card">
+                <h3>Splash Page</h3>
+                <p>
+                    {% if splash_page_set_correctly %}
+                        <span style="color: green;">●</span> Set Correctly
+                    {% else %}
+                        <span style="color: red;">●</span> Not Set Correctly
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        <div class="refresh-controls">
+            <a href="{{ url_for('routes.admin') }}">Back to Admin</a>
+        </div>
+    </div>
+</body>
+</html>

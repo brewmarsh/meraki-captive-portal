@@ -157,3 +157,38 @@ def force_refresh():
     Force a refresh of the admin page.
     """
     return redirect(url_for('routes.admin'))
+
+@bp.route('/meraki_status')
+def meraki_status():
+    """
+    The Meraki status page, which displays detailed information about the Meraki integration.
+    """
+    logging.info("Meraki status page loaded")
+    try:
+        meraki_org_id = os.environ.get('MERAKI_ORG_ID')
+        meraki_ssid_names = os.environ.get('MERAKI_SSID_NAMES')
+        meraki_api_key_set = bool(os.environ.get('MERAKI_API_KEY'))
+        external_url = None
+        port_forwarding_rule_active = False
+        splash_page_set_correctly = False
+        dashboard = get_dashboard()
+        if dashboard and meraki_org_id:
+            networks = dashboard.organizations.getOrganizationNetworks(meraki_org_id)
+            if networks:
+                network_id = networks[0]['id']
+                external_url = get_external_url(dashboard, meraki_org_id, network_id)
+                port_forwarding_rule_active = verify_port_forwarding_rule(dashboard, network_id)
+                if meraki_ssid_names:
+                    # For simplicity, we only check the first SSID
+                    splash_page_set_correctly = verify_splash_page(dashboard, network_id, meraki_ssid_names.split(',')[0])
+
+        return render_template('meraki_status.html',
+                                 meraki_api_key_set=meraki_api_key_set,
+                                 meraki_org_id=meraki_org_id,
+                                 meraki_ssid_names=meraki_ssid_names,
+                                 external_url=external_url,
+                                 port_forwarding_rule_active=port_forwarding_rule_active,
+                                 splash_page_set_correctly=splash_page_set_correctly)
+    except Exception as e:
+        logging.error(f"Error loading Meraki status page: {e}", exc_info=True)
+        return "An error occurred while loading the Meraki status page.", 500
