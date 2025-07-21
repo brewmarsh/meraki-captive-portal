@@ -32,7 +32,7 @@ def get_external_url(api_key, org_id, network_id):
         serial = get_appliance_serial(dashboard, network_id)
         if serial:
             interface = dashboard.devices.getDeviceManagementInterface(serial)
-            return interface.get('wan1', {}).get('wanIp', 'Not available')
+            return interface.get('ddnsHostnames', {}).get('activeDdnsHostname', 'Not available')
         return "Appliance not found"
     except meraki.APIError as e:
         logging.error(f"Meraki API error getting external URL: {e}")
