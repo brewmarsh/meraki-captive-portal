@@ -104,13 +104,13 @@ def admin():
         clients = Client.query.order_by(Client.last_seen.desc()).limit(10).all()
         logging.debug(f"Total clients: {total_clients}, showing last 10")
 
-        meraki_org_name = os.environ.get('MERAKI_ORG_NAME')
+        meraki_org_id = os.environ.get('MERAKI_ORG_ID')
         meraki_ssid_names = os.environ.get('MERAKI_SSID_NAMES')
 
         return render_template('admin.html',
                                total_clients=total_clients,
                                clients=clients,
-                               meraki_org_name=meraki_org_name,
+                               meraki_org_id=meraki_org_id,
                                meraki_ssid_names=meraki_ssid_names)
     except Exception as e:
         logging.error(f"Error loading admin page: {e}", exc_info=True)

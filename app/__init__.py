@@ -28,13 +28,13 @@ def create_app():
     logging.info("Registering blueprint")
     app.register_blueprint(routes.bp)
 
-    if os.environ.get('MERAKI_API_ENABLED') == 'true':
+    if os.environ.get('MERAKI_API_ENABLED', 'false').lower() == 'true':
         logging.info("Meraki API is enabled, updating splash page settings")
         api_key = os.environ.get('MERAKI_API_KEY')
-        org_name = os.environ.get('MERAKI_ORG_NAME')
+        org_id = os.environ.get('MERAKI_ORG_ID')
         ssid_names = os.environ.get('MERAKI_SSID_NAMES', '').split(',')
-        if api_key and org_name and ssid_names:
-            update_splash_page_settings(api_key, org_name, ssid_names)
+        if api_key and org_id and ssid_names:
+            update_splash_page_settings(api_key, org_id, ssid_names)
         else:
             logging.warning("Meraki API is enabled, but one or more required environment variables are missing.")
 

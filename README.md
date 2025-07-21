@@ -54,7 +54,7 @@ This application can optionally use the Meraki API to automatically configure th
 
 -   `MERAKI_API_ENABLED=true`
 -   `MERAKI_API_KEY`: Your Meraki API key.
--   `MERAKI_ORG_NAME`: The name of your Meraki organization.
+-   `MERAKI_ORG_ID`: Your Meraki organization ID.
 -   `MERAKI_SSID_NAMES`: A comma-separated list of SSIDs to apply the splash page to.
 
 When the application starts, it will use the Meraki API to update the splash page settings for the specified SSIDs.

@@ -2,30 +2,21 @@ import meraki
 import logging
 import os
 
-def get_network_id(dashboard, org_name):
+def get_organization_id(dashboard, org_id):
     """
-    Get the network ID for a given organization name.
+    Get the organization ID. This function is simplified as the org_id is now directly provided.
     """
-    try:
-        organizations = dashboard.organizations.getOrganizations()
-        for org in organizations:
-            if org['name'] == org_name:
-                return org['id']
-        return None
-    except meraki.APIError as e:
-        logging.error(f"Meraki API error getting organization ID: {e}")
-        return None
+    return org_id
 
-def update_splash_page_settings(api_key, org_name, ssid_names):
+def update_splash_page_settings(api_key, org_id, ssid_names):
     """
     Update the splash page settings for the given SSIDs.
     """
     logging.info("Initializing Meraki dashboard API")
     dashboard = meraki.DashboardAPI(api_key)
 
-    org_id = get_network_id(dashboard, org_name)
     if not org_id:
-        logging.error(f"Could not find organization ID for '{org_name}'")
+        logging.error("Meraki Organization ID is not provided.")
         return
 
     try:
