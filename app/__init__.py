@@ -11,12 +11,20 @@ migrate = Migrate()
 from .meraki_api import update_splash_page_settings, add_firewall_rule, add_port_forwarding_rule, verify_port_forwarding_rule
 from .meraki_dashboard import get_dashboard
 
-def create_app():
+def create_app(config_name='default'):
     """Create and configure an instance of the Flask application."""
-    logging.info("Creating Flask app")
+    logging.info(f"Creating Flask app with config '{config_name}'")
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
+
+    if config_name == 'testing':
+        app.config['TESTING'] = True
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+        app.config['SECRET_KEY'] = 'test-secret-key'
+        app.config['WTF_CSRF_ENABLED'] = False
+    else:
+        app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev')
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
+
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     logging.info("Initializing database")

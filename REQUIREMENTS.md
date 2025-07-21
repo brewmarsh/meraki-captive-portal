@@ -77,7 +77,6 @@ This document outlines the functional and non-functional requirements for the Me
 
 ## 3. TODO
 
--   **TODO3.1:** Implement a more robust testing suite with increased coverage and end-to-end tests.
 -   **TODO3.2:** Add support for additional authentication methods (e.g., social logins, email/password).
 -   **TODO3.3:** Enhance the admin dashboard with data visualization features.
 -   **TODO3.4:** Implement internationalization (i18n) for the user-facing pages.

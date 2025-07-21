@@ -8,7 +8,7 @@ logging.basicConfig(level=log_level, format='%(asctime)s - %(levelname)s - %(mes
 
 logging.info("Starting application")
 
-app = create_app()
+app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 
 if __name__ == "__main__":
     try:

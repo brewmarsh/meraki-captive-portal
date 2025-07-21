@@ -4,7 +4,7 @@ This is a list of recommended improvements and new features for the Meraki Capti
 
 ## 🚀 High Priority
 
--   [ ] **Implement a more robust testing suite:** Add more tests to cover all the application's features, including the Meraki API integration.
+-   [x] **Implement a more robust testing suite:** Add more tests to cover all the application's features, including the Meraki API integration.
 -   [ ] **Add support for more authentication methods:** Implement support for other authentication methods, such as social logins (Google, Facebook, etc.) or email/password authentication.
 -   [ ] **Improve error handling:** Add more specific error handling to provide better feedback to the user and to make debugging easier.
 

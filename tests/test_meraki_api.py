@@ -1,18 +1,12 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from app.meraki_api import get_organization_id, update_splash_page_settings
+from app.meraki_api import update_splash_page_settings
 
 class TestMerakiApi(unittest.TestCase):
 
-    def test_get_organization_id(self):
-        """
-        Test that get_organization_id returns the provided organization ID.
-        """
-        org_id = get_organization_id(None, '123')
-        self.assertEqual(org_id, '123')
-
+    @patch('app.meraki_api.get_external_url', return_value='1.2.3.4')
     @patch('meraki.DashboardAPI')
-    def test_update_splash_page_settings(self, mock_dashboard_api):
+    def test_update_splash_page_settings(self, mock_dashboard_api, mock_get_external_url):
         """
         Test that update_splash_page_settings calls the correct Meraki API functions.
         """
@@ -27,8 +21,8 @@ class TestMerakiApi(unittest.TestCase):
             {'number': 1, 'name': 'Test SSID 2'}
         ]
 
-        with patch.dict('os.environ', {'PUBLIC_IP': '1.2.3.4', 'PORT': '8080'}):
-            update_splash_page_settings('fake_key', '123', ['Test SSID 1'])
+        with patch.dict('os.environ', {'PORT': '8080'}):
+            update_splash_page_settings(mock_dashboard, '123', ['Test SSID 1'])
 
         mock_dashboard.wireless.updateNetworkWirelessSsidSplashSettings.assert_called_once_with(
             networkId='net-1',

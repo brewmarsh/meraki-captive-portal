@@ -77,7 +77,7 @@ from flask import send_from_directory
 def restrict_admin_access():
     if request.path == '/admin':
         logging.info("Admin page access attempt")
-        allowed_subnet = os.environ.get('ADMIN_SUBNET')
+        allowed_subnet = current_app.config.get('ADMIN_SUBNET') or os.environ.get('ADMIN_SUBNET')
         if allowed_subnet:
             try:
                 # Get the real IP address from the X-Forwarded-For header if present
