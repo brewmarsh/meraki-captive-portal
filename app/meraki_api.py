@@ -2,7 +2,9 @@ import logging
 import os
 import meraki
 from .meraki_dashboard import get_dashboard
+from . import cache
 
+@cache.cached(timeout=3600, key_prefix='get_appliance_serial')
 def get_appliance_serial(dashboard, network_id):
     """
     Get the serial number of the appliance in a network.
@@ -17,6 +19,7 @@ def get_appliance_serial(dashboard, network_id):
         logging.error(f"Meraki API error getting appliance serial: {e}")
         return None
 
+@cache.cached(timeout=3600, key_prefix='get_external_url')
 def get_external_url(dashboard, org_id, network_id):
     """
     Get the external URL of the appliance.
@@ -31,6 +34,7 @@ def get_external_url(dashboard, org_id, network_id):
         logging.error(f"Meraki API error getting external URL: {e}")
         return None
 
+@cache.cached(timeout=300, key_prefix='verify_port_forwarding_rule')
 def verify_port_forwarding_rule(dashboard, network_id):
     """
     Verify that the port forwarding rule is active.
@@ -45,6 +49,7 @@ def verify_port_forwarding_rule(dashboard, network_id):
         logging.error(f"Meraki API error verifying port forwarding rule: {e}")
         return False
 
+@cache.cached(timeout=300, key_prefix='verify_splash_page')
 def verify_splash_page(dashboard, network_id, ssid_name):
     """
     Verify that the splash page is set correctly for a given SSID.

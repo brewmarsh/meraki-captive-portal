@@ -1,0 +1,49 @@
+body.dark-mode {
+    background-color: #222;
+    color: #eee;
+}
+
+.dark-mode .admin-container, .dark-mode .login-container {
+    background-color: #333;
+    border: 1px solid #555;
+    color: #eee;
+}
+
+.dark-mode .stat-card {
+    background-color: #444;
+    border: 1px solid #666;
+}
+
+.dark-mode table {
+    color: #eee;
+    background-color: #333;
+}
+
+.dark-mode th, .dark-mode td {
+    border: 1px solid #666;
+}
+
+.dark-mode th {
+    background-color: #555;
+}
+
+.dark-mode a {
+    color: #90caf9;
+}
+
+.dark-mode input[type="text"], .dark-mode input[type="password"], .dark-mode input[type="number"] {
+    background-color: #555;
+    color: #eee;
+    border: 1px solid #777;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.dark-mode input[type="submit"], .dark-mode button {
+    background-color: #90caf9;
+    color: #222;
+    border: 1px solid #90caf9;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}

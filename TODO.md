@@ -4,14 +4,15 @@ This is a list of recommended improvements and new features for the Meraki Capti
 
 ## 🚀 High Priority
 
--   [ ] **Implement a more robust testing suite:** Add more tests to cover all the application's features, including the Meraki API integration.
--   [ ] **Add support for more authentication methods:** Implement support for other authentication methods, such as social logins (Google, Facebook, etc.) or email/password authentication.
--   [ ] **Improve error handling:** Add more specific error handling to provide better feedback to the user and to make debugging easier.
+-   [x] **Implement a more robust testing suite:** Add more tests to cover all the application's features, including the Meraki API integration.
+-   [x] **Add support for more authentication methods:** Implement support for other authentication methods, such as social logins (Google, Facebook, etc.) or email/password authentication.
+-   [x] **Improve error handling:** Add more specific error handling to provide better feedback to the user and to make debugging easier.
 
 ## ✨ Medium Priority
 
--   [ ] **Add a dark mode:** Add a dark mode option to the web interface.
--   [ ] **Implement a more advanced admin dashboard:** Add more features to the admin dashboard, such as charts and graphs to visualize the captured data.
+-   [x] **Implement a multi-stage Docker build:** Reduce the production image size by implementing a multi-stage Docker build.
+-   [x] **Add a dark mode:** Add a dark mode option to the web interface.
+-   [x] **Implement a more advanced admin dashboard:** Add more features to the admin dashboard, such as charts and graphs to visualize the captured data.
 -   [ ] **Add support for multiple languages:** Add support for multiple languages to the web interface.
 
 ## 💡 Low Priority

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{ title }} - Captive Portal</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/dark.css') }}">
+        <style>
+            #loader {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 9999;
+                background: #fff url('{{ url_for('static', filename='images/loader.gif') }}') center no-repeat;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="loader"></div>
+        <div class="navbar">
+            <div class="navbar-brand">
+                <a href="{{ url_for('routes.splash') }}">Captive Portal</a>
+            </div>
+            <div class="navbar-nav">
+                {% if current_user.is_anonymous %}
+                <a href="{{ url_for('routes.login') }}">Login</a>
+                {% else %}
+                <a href="{{ url_for('routes.logout') }}">Logout</a>
+                {% endif %}
+                {% if request.path == url_for('routes.admin') %}
+                <button id="theme-switcher">Toggle Dark Mode</button>
+                {% endif %}
+            </div>
+        </div>
+        <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+        <script>
+            window.addEventListener('load', function() {
+                var loader = document.getElementById('loader');
+                loader.style.display = 'none';
+            });
+
+            document.getElementById('theme-switcher').addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+            });
+        </script>
+    </body>
+</html>

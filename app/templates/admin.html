@@ -1,14 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="{{ auto_refresh_seconds }}">
-    <title>Captive Portal Admin Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
     <div class="admin-container">
         <h1>Captive Portal Admin Dashboard</h1>
 
@@ -68,6 +60,54 @@
                 <input type="submit" value="Force Refresh">
             </form>
         </div>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>Connections Per Day</h3>
+                <canvas id="connectionsPerDayChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Top User Agents</h3>
+                <canvas id="topUserAgentsChart"></canvas>
+            </div>
+        </div>
     </div>
-</body>
-</html>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        fetch('/chart-data')
+            .then(response => response.json())
+            .then(data => {
+                const connectionsPerDayCtx = document.getElementById('connectionsPerDayChart').getContext('2d');
+                new Chart(connectionsPerDayCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.connections_per_day.labels,
+                        datasets: [{
+                            label: '# of Connections',
+                            data: data.connections_per_day.data,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                const topUserAgentsCtx = document.getElementById('topUserAgentsChart').getContext('2d');
+                new Chart(topUserAgentsCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: data.top_user_agents.labels,
+                        datasets: [{
+                            label: 'Top User Agents',
+                            data: data.top_user_agents.data
+                        }]
+                    }
+                });
+            });
+    </script>
+{% endblock %}

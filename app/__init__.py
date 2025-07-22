@@ -2,30 +2,55 @@ import meraki
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_login import LoginManager
+from flask_caching import Cache
 import os
 import logging
 
 db = SQLAlchemy()
 migrate = Migrate()
+login = LoginManager()
+cache = Cache()
 
 from .meraki_api import update_splash_page_settings, add_firewall_rule, add_port_forwarding_rule, verify_port_forwarding_rule
 from .meraki_dashboard import get_dashboard
 
-def create_app():
+def create_app(config_name='default'):
     """Create and configure an instance of the Flask application."""
-    logging.info("Creating Flask app")
+    logging.info(f"Creating Flask app with config '{config_name}'")
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
+
+    if config_name == 'testing':
+        app.config['TESTING'] = True
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+        app.config['SECRET_KEY'] = 'test-secret-key'
+        app.config['WTF_CSRF_ENABLED'] = False
+        app.config['CACHE_TYPE'] = 'null'
+    else:
+        app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev')
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
+
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['CACHE_TYPE'] = 'simple'
+    app.config['CACHE_DEFAULT_TIMEOUT'] = 300
+    app.config['CACHE_KEY_PREFIX'] = 'fcache'
 
     logging.info("Initializing database")
     db.init_app(app)
     migrate.init_app(app, db)
+    login.init_app(app)
+    cache.init_app(app)
+    login.login_view = 'routes.login'
 
     from . import routes
     logging.info("Registering blueprint")
     app.register_blueprint(routes.bp)
+
+    from app.models import User
+
+    @login.user_loader
+    def load_user(id):
+        return User.query.get(int(id))
 
     meraki_api_enabled = os.environ.get('MERAKI_API_ENABLED', 'false').lower() == 'true'
     logging.info(f"Meraki API Enabled: {meraki_api_enabled}")
@@ -52,6 +77,9 @@ def create_app():
                 update_splash_page_settings(dashboard, org_id, ssid_names)
         else:
             logging.warning("Meraki API is enabled, but one or more required environment variables are missing.")
+
+    from . import errors
+    app.register_blueprint(errors.bp)
 
     logging.info("Flask app created")
     return app

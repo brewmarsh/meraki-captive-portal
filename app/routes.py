@@ -1,6 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, url_for, current_app, session
-from .models import Client
+from flask import Blueprint, render_template, request, redirect, url_for, current_app, session, flash
+from .models import Client, User
 from . import db
+from .forms import LoginForm, RegistrationForm
+from flask_login import current_user, login_user, logout_user, login_required
 import logging
 from datetime import datetime
 from .meraki_api import get_external_url, verify_port_forwarding_rule, verify_splash_page
@@ -9,6 +11,7 @@ from .meraki_dashboard import get_dashboard
 bp = Blueprint('routes', __name__)
 
 @bp.route('/')
+@login_required
 def splash():
     """
     The splash page for the captive portal.
@@ -77,7 +80,7 @@ from flask import send_from_directory
 def restrict_admin_access():
     if request.path == '/admin':
         logging.info("Admin page access attempt")
-        allowed_subnet = os.environ.get('ADMIN_SUBNET')
+        allowed_subnet = current_app.config.get('ADMIN_SUBNET') or os.environ.get('ADMIN_SUBNET')
         if allowed_subnet:
             try:
                 # Get the real IP address from the X-Forwarded-For header if present
@@ -157,6 +160,65 @@ def force_refresh():
     Force a refresh of the admin page.
     """
     return redirect(url_for('routes.admin'))
+
+@bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('routes.splash'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user is None or not user.check_password(form.password.data):
+            flash('Invalid email or password')
+            return redirect(url_for('routes.login'))
+        login_user(user, remember=form.remember_me.data)
+        return redirect(url_for('routes.splash'))
+    return render_template('login.html', title='Sign In', form=form)
+
+@bp.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('routes.login'))
+
+@bp.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('routes.splash'))
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(username=form.email.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Congratulations, you are now a registered user!')
+        return redirect(url_for('routes.login'))
+    return render_template('register.html', title='Register', form=form)
+
+from sqlalchemy import func
+
+@bp.route('/chart-data')
+@login_required
+def chart_data():
+    # Connections per day
+    connections_per_day = db.session.query(func.date(Client.first_seen), func.count(Client.id)).group_by(func.date(Client.first_seen)).all()
+    labels = [row[0].strftime('%Y-%m-%d') for row in connections_per_day]
+    data = [row[1] for row in connections_per_day]
+
+    # Top user agents
+    top_user_agents = db.session.query(Client.user_agent, func.count(Client.id)).group_by(Client.user_agent).order_by(func.count(Client.id).desc()).limit(5).all()
+    user_agent_labels = [row[0] for row in top_user_agents]
+    user_agent_data = [row[1] for row in top_user_agents]
+
+    return {
+        'connections_per_day': {
+            'labels': labels,
+            'data': data
+        },
+        'top_user_agents': {
+            'labels': user_agent_labels,
+            'data': user_agent_data
+        }
+    }
 
 @bp.route('/meraki_status')
 def meraki_status():
