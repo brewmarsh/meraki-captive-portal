@@ -10,8 +10,8 @@
             Captive Portal:
             <a href="{{ url_for('routes.login') }}">Login</a>
             <a href="{{ url_for('routes.logout') }}">Logout</a>
-            <button id="theme-switcher">Toggle Dark Mode</button>
         </div>
+        <button id="theme-switcher">Toggle Dark Mode</button>
         <hr>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
