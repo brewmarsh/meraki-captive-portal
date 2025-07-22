@@ -81,7 +81,6 @@ This document outlines the functional and non-functional requirements for the Me
 
 -   **TODO3.3:** Enhance the admin dashboard with data visualization features.
 -   **TODO3.4:** Implement internationalization (i18n) for the user-facing pages.
--   **TODO3.5:** Implement a multi-stage Docker build to reduce the production image size.
 -   **TODO3.6:** Configure the Docker container to run as a non-root user to improve security.
 -   **TODO3.7:** Add a Dockerfile linter (e.g., Hadolint) to the CI/CD pipeline.
 -   **TODO3.8:** Integrate a vulnerability scanner (e.g., Trivy, Snyk) into the CI/CD pipeline to scan the Docker image for known vulnerabilities.
