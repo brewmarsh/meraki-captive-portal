@@ -23,7 +23,6 @@ class TestMerakiApi(unittest.TestCase):
 
         with patch.dict('os.environ', {'PORT': '8080'}):
             update_splash_page_settings(mock_dashboard, '123', ['Test SSID 1'])
-            update_splash_page_settings(mock_dashboard, '123', ['Test SSID 1'])
 
         mock_get_external_url.assert_called()
         mock_dashboard.wireless.updateNetworkWirelessSsidSplashSettings.assert_called_with(

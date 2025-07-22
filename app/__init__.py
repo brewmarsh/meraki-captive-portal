@@ -33,6 +33,7 @@ def create_app(config_name='default'):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['CACHE_TYPE'] = 'simple'
     app.config['CACHE_DEFAULT_TIMEOUT'] = 300
+    app.config['CACHE_KEY_PREFIX'] = 'fcache'
 
     logging.info("Initializing database")
     db.init_app(app)
