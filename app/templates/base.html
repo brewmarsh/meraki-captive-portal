@@ -28,7 +28,9 @@
                 {% else %}
                 <a href="{{ url_for('routes.logout') }}">Logout</a>
                 {% endif %}
+                {% if request.path == url_for('routes.admin') %}
                 <button id="theme-switcher">Toggle Dark Mode</button>
+                {% endif %}
             </div>
         </div>
         <hr>
