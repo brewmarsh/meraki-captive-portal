@@ -194,6 +194,32 @@ def register():
         return redirect(url_for('routes.login'))
     return render_template('register.html', title='Register', form=form)
 
+from sqlalchemy import func
+
+@bp.route('/chart-data')
+@login_required
+def chart_data():
+    # Connections per day
+    connections_per_day = db.session.query(func.date(Client.first_seen), func.count(Client.id)).group_by(func.date(Client.first_seen)).all()
+    labels = [row[0].strftime('%Y-%m-%d') for row in connections_per_day]
+    data = [row[1] for row in connections_per_day]
+
+    # Top user agents
+    top_user_agents = db.session.query(Client.user_agent, func.count(Client.id)).group_by(Client.user_agent).order_by(func.count(Client.id).desc()).limit(5).all()
+    user_agent_labels = [row[0] for row in top_user_agents]
+    user_agent_data = [row[1] for row in top_user_agents]
+
+    return {
+        'connections_per_day': {
+            'labels': labels,
+            'data': data
+        },
+        'top_user_agents': {
+            'labels': user_agent_labels,
+            'data': user_agent_data
+        }
+    }
+
 @bp.route('/meraki_status')
 def meraki_status():
     """

@@ -28,6 +28,7 @@ This document outlines the functional and non-functional requirements for the Me
 -   **FR1.3.4:** The admin dashboard shall display the status of the Meraki API integration, including the organization ID, SSID names, external URL, and whether the port forwarding rule and splash page are correctly configured.
 -   **FR1.3.5:** The admin dashboard shall allow the user to force a refresh of the page.
 -   **FR1.3.6:** The admin dashboard shall allow the user to set the auto-refresh interval.
+-   **FR1.3.7:** The admin dashboard shall display charts for connections per day and top user agents.
 
 ### 1.4. Meraki Integration
 
