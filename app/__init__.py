@@ -3,12 +3,14 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
+from flask_caching import Cache
 import os
 import logging
 
 db = SQLAlchemy()
 migrate = Migrate()
 login = LoginManager()
+cache = Cache()
 
 from .meraki_api import update_splash_page_settings, add_firewall_rule, add_port_forwarding_rule, verify_port_forwarding_rule
 from .meraki_dashboard import get_dashboard
@@ -23,16 +25,20 @@ def create_app(config_name='default'):
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
         app.config['SECRET_KEY'] = 'test-secret-key'
         app.config['WTF_CSRF_ENABLED'] = False
+        app.config['CACHE_TYPE'] = 'null'
     else:
         app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev')
         app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
 
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['CACHE_TYPE'] = 'simple'
+    app.config['CACHE_DEFAULT_TIMEOUT'] = 300
 
     logging.info("Initializing database")
     db.init_app(app)
     migrate.init_app(app, db)
     login.init_app(app)
+    cache.init_app(app)
     login.login_view = 'routes.login'
 
     from . import routes

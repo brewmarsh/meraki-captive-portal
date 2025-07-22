@@ -43,6 +43,7 @@ This document outlines the functional and non-functional requirements for the Me
 -   **NFR2.1.1:** The splash page shall load quickly to provide a seamless user experience.
 -   **NFR2.1.2:** The application shall be able to handle a high volume of concurrent connections without significant degradation in performance.
 -   **NFR2.1.3:** Database queries shall be optimized to ensure fast retrieval of client data for the admin dashboard.
+-   **NFR2.1.4:** The application shall cache the Meraki status data to improve performance.
 
 ### 2.2. Security
 

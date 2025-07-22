@@ -1,9 +1,9 @@
 import unittest
 from unittest.mock import patch, MagicMock
+from app import create_app, cache
 from app.meraki_api import update_splash_page_settings
 
 class TestMerakiApi(unittest.TestCase):
-
     @patch('app.meraki_api.get_external_url', return_value='1.2.3.4')
     @patch('meraki.DashboardAPI')
     def test_update_splash_page_settings(self, mock_dashboard_api, mock_get_external_url):
@@ -23,8 +23,10 @@ class TestMerakiApi(unittest.TestCase):
 
         with patch.dict('os.environ', {'PORT': '8080'}):
             update_splash_page_settings(mock_dashboard, '123', ['Test SSID 1'])
+            update_splash_page_settings(mock_dashboard, '123', ['Test SSID 1'])
 
-        mock_dashboard.wireless.updateNetworkWirelessSsidSplashSettings.assert_called_once_with(
+        mock_get_external_url.assert_called()
+        mock_dashboard.wireless.updateNetworkWirelessSsidSplashSettings.assert_called_with(
             networkId='net-1',
             number=0,
             splashPage='custom',
