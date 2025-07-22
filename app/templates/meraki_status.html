@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meraki Status</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
     <div class="admin-container">
         <h1>Meraki Status</h1>
         <div class="stats-grid">
@@ -76,5 +69,4 @@
             <a href="{{ url_for('routes.admin') }}">Back to Admin</a>
         </div>
     </div>
-</body>
-</html>
+{% endblock %}
