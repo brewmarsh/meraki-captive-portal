@@ -51,6 +51,7 @@ This document outlines the functional and non-functional requirements for the Me
 -   **NFR2.2.2:** The application shall not store any personally identifiable information (PII) other than the client's MAC address, IP address, and user agent.
 -   **NFR2.2.3:** The application shall log all connection errors and security-related events to a file for debugging and auditing purposes.
 -   **NFR2.2.4:** The application shall use environment variables to manage sensitive information such as API keys and database credentials.
+-   **NFR2.2.5:** The application shall have custom error pages for 404 and 500 errors.
 
 ### 2.3. Usability
 

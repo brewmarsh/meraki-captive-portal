@@ -77,5 +77,8 @@ def create_app(config_name='default'):
         else:
             logging.warning("Meraki API is enabled, but one or more required environment variables are missing.")
 
+    from . import errors
+    app.register_blueprint(errors.bp)
+
     logging.info("Flask app created")
     return app
