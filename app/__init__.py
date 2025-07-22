@@ -2,11 +2,13 @@ import meraki
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_login import LoginManager
 import os
 import logging
 
 db = SQLAlchemy()
 migrate = Migrate()
+login = LoginManager()
 
 from .meraki_api import update_splash_page_settings, add_firewall_rule, add_port_forwarding_rule, verify_port_forwarding_rule
 from .meraki_dashboard import get_dashboard
@@ -30,10 +32,18 @@ def create_app(config_name='default'):
     logging.info("Initializing database")
     db.init_app(app)
     migrate.init_app(app, db)
+    login.init_app(app)
+    login.login_view = 'routes.login'
 
     from . import routes
     logging.info("Registering blueprint")
     app.register_blueprint(routes.bp)
+
+    from app.models import User
+
+    @login.user_loader
+    def load_user(id):
+        return User.query.get(int(id))
 
     meraki_api_enabled = os.environ.get('MERAKI_API_ENABLED', 'false').lower() == 'true'
     logging.info(f"Meraki API Enabled: {meraki_api_enabled}")

@@ -7,9 +7,11 @@ This document outlines the functional and non-functional requirements for the Me
 ### 1.1. Splash Page
 
 -   **FR1.1.1:** The system shall display a splash page to users connecting to the guest Wi-Fi network.
--   **FR1.1.2:** The splash page shall display a customizable logo. The default logo is located at `app/static/images/logo.png`.
--   **FR1.1.3:** The splash page shall feature a "Connect" button that, when clicked, grants the user internet access by redirecting them to the Meraki-provided `base_grant_url`.
--   **FR1.1.4:** The splash page shall include a timer that automatically redirects the user to their original destination after a configurable amount of time.
+-   **FR1.1.2:** The splash page shall require users to log in before they can access the internet.
+-   **FR1.1.3:** The system shall provide a registration page for new users.
+-   **FR1.1.4:** The splash page shall display a customizable logo. The default logo is located at `app/static/images/logo.png`.
+-   **FR1.1.5:** The splash page shall feature a "Connect" button that, when clicked, grants the user internet access by redirecting them to the Meraki-provided `base_grant_url`.
+-   **FR1.1.6:** The splash page shall include a timer that automatically redirects the user to their original destination after a configurable amount of time.
 
 ### 1.2. Client Data Capture
 
@@ -77,7 +79,6 @@ This document outlines the functional and non-functional requirements for the Me
 
 ## 3. TODO
 
--   **TODO3.2:** Add support for additional authentication methods (e.g., social logins, email/password).
 -   **TODO3.3:** Enhance the admin dashboard with data visualization features.
 -   **TODO3.4:** Implement internationalization (i18n) for the user-facing pages.
 -   **TODO3.5:** Implement a multi-stage Docker build to reduce the production image size.

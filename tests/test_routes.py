@@ -2,8 +2,8 @@ import unittest
 from unittest.mock import patch
 import ipaddress
 from app import create_app, db
-from app.models import Client
-from flask import session
+from app.models import Client, User
+from flask import session, url_for
 
 class TestRoutes(unittest.TestCase):
 
@@ -23,6 +23,15 @@ class TestRoutes(unittest.TestCase):
         """
         Test that the splash page creates a new client.
         """
+        user = User(username='testuser')
+        user.set_password('password')
+        db.session.add(user)
+        db.session.commit()
+        with self.app.test_request_context():
+            self.client.post(url_for('routes.login'), data={
+                'username': 'testuser',
+                'password': 'password'
+            }, follow_redirects=True)
         response = self.client.get('/?client_mac=00:11:22:33:44:55&client_ip=1.2.3.4&base_grant_url=https://meraki.com')
         self.assertEqual(response.status_code, 200)
         client = Client.query.filter_by(mac_address='00:11:22:33:44:55').first()
@@ -33,6 +42,15 @@ class TestRoutes(unittest.TestCase):
         """
         Test that the splash page updates a returning client.
         """
+        user = User(username='testuser')
+        user.set_password('password')
+        db.session.add(user)
+        db.session.commit()
+        with self.app.test_request_context():
+            self.client.post(url_for('routes.login'), data={
+                'username': 'testuser',
+                'password': 'password'
+            }, follow_redirects=True)
         client = Client(mac_address='00:11:22:33:44:55', ip_address='1.2.3.4')
         db.session.add(client)
         db.session.commit()
@@ -46,9 +64,18 @@ class TestRoutes(unittest.TestCase):
         """
         Test that the splash page handles requests without Meraki data.
         """
-        response = self.client.get('/')
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Direct access is not supported.', response.data)
+        user = User(username='testuser')
+        user.set_password('password')
+        db.session.add(user)
+        db.session.commit()
+        with self.app.test_request_context():
+            self.client.post(url_for('routes.login'), data={
+                'username': 'testuser',
+                'password': 'password'
+            }, follow_redirects=True)
+            response = self.client.get('/')
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(b'Direct access is not supported.', response.data)
 
     def test_connect_with_redirect_url(self):
         """
