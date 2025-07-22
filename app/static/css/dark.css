@@ -35,10 +35,15 @@ body.dark-mode {
     background-color: #555;
     color: #eee;
     border: 1px solid #777;
+    padding: 10px;
+    border-radius: 5px;
 }
 
 .dark-mode input[type="submit"], .dark-mode button {
     background-color: #90caf9;
     color: #222;
     border: 1px solid #90caf9;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
 }
