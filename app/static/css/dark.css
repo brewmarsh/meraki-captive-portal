@@ -1,0 +1,35 @@
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.dark-mode .admin-container {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+}
+
+.dark-mode .stat-card {
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+}
+
+.dark-mode table {
+    border-collapse: collapse;
+    width: 100%;
+    color: #ffffff;
+    background-color: #1e1e1e;
+}
+
+.dark-mode th, .dark-mode td {
+    border: 1px solid #444;
+    padding: 8px;
+    text-align: left;
+}
+
+.dark-mode th {
+    background-color: #333;
+}
+
+.dark-mode a {
+    color: #bb86fc;
+}

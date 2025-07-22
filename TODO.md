@@ -11,7 +11,7 @@ This is a list of recommended improvements and new features for the Meraki Capti
 ## ✨ Medium Priority
 
 -   [x] **Implement a multi-stage Docker build:** Reduce the production image size by implementing a multi-stage Docker build.
--   [ ] **Add a dark mode:** Add a dark mode option to the web interface.
+-   [x] **Add a dark mode:** Add a dark mode option to the web interface.
 -   [ ] **Implement a more advanced admin dashboard:** Add more features to the admin dashboard, such as charts and graphs to visualize the captured data.
 -   [ ] **Add support for multiple languages:** Add support for multiple languages to the web interface.
 

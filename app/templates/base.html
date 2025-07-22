@@ -2,12 +2,15 @@
 <html>
     <head>
         <title>{{ title }} - Captive Portal</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/dark.css') }}">
     </head>
     <body>
         <div>
             Captive Portal:
             <a href="{{ url_for('routes.login') }}">Login</a>
             <a href="{{ url_for('routes.logout') }}">Logout</a>
+            <button id="theme-switcher">Toggle Dark Mode</button>
         </div>
         <hr>
         {% with messages = get_flashed_messages() %}
@@ -20,5 +23,10 @@
         {% endif %}
         {% endwith %}
         {% block content %}{% endblock %}
+        <script>
+            document.getElementById('theme-switcher').addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+            });
+        </script>
     </body>
 </html>

@@ -58,6 +58,7 @@ This document outlines the functional and non-functional requirements for the Me
 -   **NFR2.3.1:** The splash page shall have a clean and intuitive design that is easy for users to navigate.
 -   **NFR2.3.2:** The admin dashboard shall provide a clear and concise overview of the system's status and client data.
 -   **NFR2.3.3:** The Meraki status page shall provide detailed and easy-to-understand information about the Meraki integration.
+-   **NFR2.3.4:** The application shall have a dark mode option.
 
 ### 2.4. Deployment
 
