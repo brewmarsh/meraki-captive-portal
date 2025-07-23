@@ -1,13 +1,19 @@
-from flask import Blueprint, render_template, request, redirect, url_for, current_app, session, flash
+import logging
+import ipaddress
+import os
+from datetime import datetime
+from flask import (
+    Blueprint, render_template, request, redirect, url_for, current_app, session, flash, send_from_directory
+)
+from sqlalchemy import func
 from .models import Client, User, Profile
 from . import db
 from .forms import LoginForm, RegistrationForm, ProfileForm, ResetPasswordRequestForm, ResetPasswordForm
 from flask_login import current_user, login_user, logout_user, login_required
-import logging
-from datetime import datetime
-from .meraki_api import get_external_url, verify_port_forwarding_rule, verify_splash_page
+from .meraki_api import get_external_url, verify_port_forwarding_rule, verify_splash_page, get_meraki_clients
 from .meraki_dashboard import get_dashboard
 from .email import send_email
+from .pihole_api import get_pihole_mappings, add_pihole_mapping, delete_pihole_mapping
 
 bp = Blueprint('routes', __name__)
 
@@ -72,11 +78,6 @@ def connect():
     redirect_url = session.get('redirect_url', 'https://www.reddit.com')
     logging.info(f"Redirecting user to {redirect_url}")
     return redirect(redirect_url)
-
-import ipaddress
-import os
-
-from flask import send_from_directory
 
 @bp.before_request
 def restrict_admin_access():
@@ -153,7 +154,7 @@ def set_refresh():
     """
     refresh_interval = request.form.get('refresh_interval')
     if refresh_interval:
-        session['auto_refresh_seconds'] = refresh_interval
+        os.environ['AUTO_REFRESH_SECONDS'] = refresh_interval
     return redirect(url_for('routes.admin'))
 
 @bp.route('/force_refresh', methods=['POST'])
@@ -198,8 +199,6 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('routes.login'))
     return render_template('register.html', title='Register', form=form)
-
-from sqlalchemy import func
 
 @bp.route('/chart-data')
 @login_required
@@ -309,3 +308,50 @@ def reset_password(token):
         flash('Your password has been reset.')
         return redirect(url_for('routes.login'))
     return render_template('reset_password.html', form=form)
+
+@bp.route('/health')
+def health_check():
+    return 'OK'
+
+@bp.route('/mappings')
+@login_required
+def mappings():
+    mappings = get_pihole_mappings()
+    return render_template('mappings.html', mappings=mappings)
+
+@bp.route('/force_sync', methods=['POST'])
+@login_required
+def force_sync():
+    meraki_clients = get_meraki_clients()
+    pihole_mappings = get_pihole_mappings()
+
+    for client in meraki_clients:
+        if client['dhcpHostname']:
+            add_pihole_mapping(client['ip'], client['dhcpHostname'])
+
+    for mapping in pihole_mappings:
+        found = False
+        for client in meraki_clients:
+            if mapping['ip'] == client['ip'] and mapping['domain'] == client['dhcpHostname']:
+                found = True
+                break
+        if not found:
+            delete_pihole_mapping(mapping['ip'], mapping['domain'])
+
+    flash('Sync complete.')
+    return redirect(url_for('routes.admin'))
+
+@bp.route('/logs')
+@login_required
+def logs():
+    with open('logs/app.log', 'r') as f:
+        logs = f.read()
+    return render_template('logs.html', logs=logs)
+
+@bp.route('/clear_logs', methods=['POST'])
+@login_required
+def clear_logs():
+    with open('logs/app.log', 'w'):
+        pass
+    flash('Logs cleared.')
+    return redirect(url_for('routes.logs'))

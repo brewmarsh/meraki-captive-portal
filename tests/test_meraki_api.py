@@ -1,6 +1,5 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from app import create_app, cache
 from app.meraki_api import update_splash_page_settings
 
 class TestMerakiApi(unittest.TestCase):

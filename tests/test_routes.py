@@ -1,9 +1,7 @@
 import unittest
-from unittest.mock import patch
-import ipaddress
 from app import create_app, db
 from app.models import Client, User
-from flask import session, url_for
+from flask import url_for
 
 class TestRoutes(unittest.TestCase):
 
@@ -78,8 +76,8 @@ class TestRoutes(unittest.TestCase):
         """
         Test that the connect route redirects to the URL stored in the session.
         """
-        with self.client.session_transaction() as session:
-            session['redirect_url'] = 'https://www.google.com'
+        with self.client.session_transaction() as sess:
+            sess['redirect_url'] = 'https://www.google.com'
         response = self.client.get('/connect')
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.location, 'https://www.google.com')

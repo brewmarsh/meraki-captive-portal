@@ -1,6 +1,5 @@
 import unittest
 from app import create_app, db
-from flask import url_for
 
 class ErrorTestCase(unittest.TestCase):
     def setUp(self):
