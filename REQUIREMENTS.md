@@ -87,6 +87,24 @@ This document outlines the functional and non-functional requirements for the Me
 -   **NFR2.6.5:** The system shall handle API errors gracefully and log them appropriately.
 -   **NFR2.6.6:** The system shall implement a retry mechanism for transient API errors.
 -   **NFR2.6.7:** The synchronization process shall be idempotent.
+=
+### 2.7. Reliability
+
+-   **NFR2.7.1:** The system shall handle API errors gracefully and log them appropriately.
+-   **NFR2.7.2:** The system shall implement a retry mechanism for transient API errors.
+-   **NFR2.7.3:** The synchronization process shall be idempotent, meaning that multiple runs with the same input will produce the same result.
+
+## 3. TODO
+
+-   **TODO3.3:** Enhance the admin dashboard with data visualization features.
+-   **TODO3.4:** Implement internationalization (i18n) for the user-facing pages.
+-   **TODO3.6:** Configure the Docker container to run as a non-root user to improve security.
+-   **TODO3.7:** Add a Dockerfile linter (e.g., Hadolint) to the CI/CD pipeline.
+-   **TODO3.8:** Integrate a vulnerability scanner (e.g., Trivy, Snyk) into the CI/CD pipeline to scan the Docker image for known vulnerabilities.
+-   **TODO3.9:** Integrate `black` and `isort` into the CI/CD pipeline to enforce consistent code formatting.
+-   **TODO3.10:** Integrate `bandit` into the CI/CD pipeline to perform automated security analysis.
+-   **TODO3.11:** Integrate `mypy` into the CI/CD pipeline to perform static type checking.
+-   **NFR2.1.2:** The application shall be able to handle a high volume of concurrent connections.
 
 ### 2.7. Documentation
 
@@ -118,3 +136,21 @@ This section outlines potential future enhancements and new features for the Mer
 -   [ ] **Add a "remember me" feature:** Add a feature to remember users so they don't have to go through the splash page every time they connect to the Wi-Fi network.
 -   [ ] **Add a "terms of service" page:** Add a page with the terms of service that users must accept before connecting to the Wi-Fi network.
 -   [ ] **Add a "privacy policy" page:** Add a page with the privacy policy to inform users about how their data is collected and used.
+-   **NFR2.5.1:** The application's logo, styling, and timer duration shall be easily customizable.
+-   **NFR2.5.2:** The application's configuration shall be managed through environment variables.
+
+## 4. Python Dependencies
+
+The following Python packages are required for the application to run:
+
+-   `Flask>=2.0.0`
+-   `python-dotenv>=0.15.0`
+-   `Flask-SQLAlchemy>=2.5.0`
+-   `Flask-Migrate>=3.0.0`
+-   `psycopg2-binary>=2.9.0`
+-   `gunicorn>=20.1.0`
+-   `meraki>=1.0.0`
+-   `Flask-Login>=0.5.0`
+-   `Flask-WTF>=1.0.0`
+-   `Flask-Caching>=1.10.1`
+-   `email-validator>=2.0.0`
