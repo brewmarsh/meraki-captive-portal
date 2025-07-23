@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark.css') }}">
+{% endblock %}
+
 {% block content %}
     <div class="admin-container">
         <h1>Captive Portal Admin Dashboard</h1>

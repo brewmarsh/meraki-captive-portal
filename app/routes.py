@@ -1,12 +1,13 @@
 from flask import Blueprint, render_template, request, redirect, url_for, current_app, session, flash
-from .models import Client, User
+from .models import Client, User, Profile
 from . import db
-from .forms import LoginForm, RegistrationForm
+from .forms import LoginForm, RegistrationForm, ProfileForm, ResetPasswordRequestForm, ResetPasswordForm
 from flask_login import current_user, login_user, logout_user, login_required
 import logging
 from datetime import datetime
 from .meraki_api import get_external_url, verify_port_forwarding_rule, verify_splash_page
 from .meraki_dashboard import get_dashboard
+from .email import send_email
 
 bp = Blueprint('routes', __name__)
 
@@ -51,7 +52,8 @@ def splash():
             session['redirect_url'] = redirect_url
             logging.info(f"Stored redirect URL in session: {redirect_url}")
 
-            return render_template('splash.html')
+            timer_duration = current_app.config.get('SPLASH_TIMER_SECONDS', 10)
+            return render_template('splash.html', timer_duration=timer_duration)
         else:
             # If Meraki data is not present, it might be a direct access attempt.
             logging.warning("Direct access to splash page without Meraki data")
@@ -164,7 +166,7 @@ def force_refresh():
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('routes.splash'))
+        return redirect(url_for('routes.admin'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -172,7 +174,7 @@ def login():
             flash('Invalid email or password')
             return redirect(url_for('routes.login'))
         login_user(user, remember=form.remember_me.data)
-        return redirect(url_for('routes.splash'))
+        return redirect(url_for('routes.admin'))
     return render_template('login.html', title='Sign In', form=form)
 
 @bp.route('/logout')
@@ -183,12 +185,15 @@ def logout():
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('routes.splash'))
+        return redirect(url_for('routes.admin'))
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(username=form.email.data)
         user.set_password(form.password.data)
+        profile = Profile()
+        user.profile = profile
         db.session.add(user)
+        db.session.add(profile)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('routes.login'))
@@ -254,3 +259,53 @@ def meraki_status():
     except Exception as e:
         logging.error(f"Error loading Meraki status page: {e}", exc_info=True)
         return "An error occurred while loading the Meraki status page.", 500
+
+@bp.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    if current_user.profile is None:
+        profile = Profile(user_id=current_user.id)
+        db.session.add(profile)
+        db.session.commit()
+    form = ProfileForm()
+    if form.validate_on_submit():
+        current_user.profile.dark_mode = form.dark_mode.data
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('routes.profile'))
+    elif request.method == 'GET':
+        form.dark_mode.data = current_user.profile.dark_mode
+    return render_template('profile.html', title='Profile', form=form)
+
+@bp.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('routes.admin'))
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.email.data).first()
+        if user:
+            token = user.get_reset_password_token()
+            send_email(user.username,
+                       'Reset Your Password',
+                       render_template('email/reset_password.html',
+                                       user=user, token=token))
+        flash('Check your email for the instructions to reset your password')
+        return redirect(url_for('routes.login'))
+    return render_template('reset_password_request.html',
+                           title='Reset Password', form=form)
+
+@bp.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('routes.admin'))
+    user = User.verify_reset_password_token(token)
+    if not user:
+        return redirect(url_for('routes.login'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        db.session.commit()
+        flash('Your password has been reset.')
+        return redirect(url_for('routes.login'))
+    return render_template('reset_password.html', form=form)
