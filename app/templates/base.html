@@ -5,7 +5,7 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/dark.css') }}">
         <style>
-            #loader {
+            .loader {
                 position: fixed;
                 left: 0;
                 top: 0;
@@ -17,7 +17,7 @@
         </style>
     </head>
     <body>
-        <div id="loader"></div>
+        <div class="loader"></div>
         <div class="navbar">
             <div class="navbar-brand">
                 <a href="{{ url_for('routes.splash') }}">Captive Portal</a>
@@ -26,10 +26,10 @@
                 {% if current_user.is_anonymous %}
                 <a href="{{ url_for('routes.login') }}">Login</a>
                 {% else %}
+                <a href="{{ url_for('routes.profile') }}">Profile</a>
+                <a href="{{ url_for('routes.mappings') }}">Mappings</a>
+                <a href="{{ url_for('routes.logs') }}">Logs</a>
                 <a href="{{ url_for('routes.logout') }}">Logout</a>
-                {% endif %}
-                {% if request.path == url_for('routes.admin') %}
-                <button id="theme-switcher">Toggle Dark Mode</button>
                 {% endif %}
             </div>
         </div>
@@ -46,13 +46,14 @@
         {% block content %}{% endblock %}
         <script>
             window.addEventListener('load', function() {
-                var loader = document.getElementById('loader');
+                const loader = document.querySelector('.loader');
                 loader.style.display = 'none';
             });
-
-            document.getElementById('theme-switcher').addEventListener('click', function() {
-                document.body.classList.toggle('dark-mode');
-            });
         </script>
+        {% if current_user.is_authenticated and current_user.profile.dark_mode %}
+        <script>
+            document.body.classList.add('dark-mode');
+        </script>
+        {% endif %}
     </body>
 </html>

@@ -142,3 +142,22 @@ def update_splash_page_settings(dashboard, org_id, ssid_names):
                     )
     except meraki.APIError as e:
         logging.error(f"Meraki API error updating splash page settings: {e}")
+
+def get_meraki_clients():
+    """
+    Get all clients from all networks in the organization.
+    """
+    dashboard = get_dashboard()
+    org_id = os.environ.get('MERAKI_ORG_ID')
+    if not dashboard or not org_id:
+        return []
+
+    try:
+        networks = dashboard.organizations.getOrganizationNetworks(org_id)
+        clients = []
+        for network in networks:
+            clients.extend(dashboard.networks.getNetworkClients(network['id'], timespan=86400))
+        return clients
+    except meraki.APIError as e:
+        logging.error(f"Meraki API error getting clients: {e}")
+        return []

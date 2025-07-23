@@ -18,8 +18,27 @@
             <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
         </div>
         <h1>Welcome to Our Guest Wi-Fi</h1>
-        <p>Click the button below to connect.</p>
+        <p>You will be redirected in <span id="timer">10</span> seconds.</p>
         <a href="{{ url_for('routes.connect') }}" class="connect-button">Connect Now</a>
     </div>
+
+    <script>
+        // Timer script
+        let timeLeft = {{ timer_duration }};
+        const timerElement = document.getElementById('timer');
+        const redirectUrl = "{{ url_for('routes.connect') }}";
+
+        const countdown = () => {
+            if (timeLeft <= 0) {
+                window.location.href = redirectUrl;
+            } else {
+                timerElement.textContent = timeLeft;
+                timeLeft--;
+            }
+        };
+
+        // Update the timer every second
+        setInterval(countdown, 1000);
+    </script>
 </body>
 </html>

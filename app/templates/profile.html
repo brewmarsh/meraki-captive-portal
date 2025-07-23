@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="profile-container">
+    <h1>User Profile</h1>
+    <form method="POST" action="{{ url_for('routes.profile') }}">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.dark_mode.label }}
+            {{ form.dark_mode() }}
+        </div>
+        <div class="form-group">
+            {{ form.submit() }}
+        </div>
+    </form>
+</div>
+{% endblock %}
