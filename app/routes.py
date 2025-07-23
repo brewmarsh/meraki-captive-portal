@@ -1,13 +1,10 @@
-from flask import Blueprint, render_template, request, redirect, url_for, current_app, session, flash
-from .models import Client, User, Profile
-from . import db
-from .forms import LoginForm, RegistrationForm, ProfileForm, ResetPasswordRequestForm, ResetPasswordForm
-from flask_login import current_user, login_user, logout_user, login_required
 import logging
 import ipaddress
 import os
 from datetime import datetime
-from flask import Blueprint, render_template, request, redirect, url_for, current_app, session, flash, send_from_directory
+from flask import (
+    Blueprint, render_template, request, redirect, url_for, current_app, session, flash, send_from_directory
+)
 from sqlalchemy import func
 from .models import Client, User, Profile
 from . import db
