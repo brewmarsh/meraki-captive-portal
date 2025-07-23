@@ -36,7 +36,7 @@ class User(UserMixin, db.Model):
         try:
             id = jwt.decode(token, current_app.config['SECRET_KEY'],
                             algorithms=['HS256'])['reset_password']
-        except:
+        except Exception:
             return
         return User.query.get(id)
 

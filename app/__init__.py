@@ -1,21 +1,18 @@
-import meraki
+import os
+import logging
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_caching import Cache
 from flask_mail import Mail
-import os
-import logging
+from .meraki_dashboard import get_dashboard
 
 db = SQLAlchemy()
 migrate = Migrate()
 login = LoginManager()
 cache = Cache()
 mail = Mail()
-
-from .meraki_api import update_splash_page_settings, add_firewall_rule, add_port_forwarding_rule, verify_port_forwarding_rule
-from .meraki_dashboard import get_dashboard
 
 def create_app(config_name='default'):
     """Create and configure an instance of the Flask application."""
@@ -45,6 +42,7 @@ def create_app(config_name='default'):
     def load_user(id):
         return User.query.get(int(id))
 
+    from . import meraki_api
     meraki_api_enabled = os.environ.get('MERAKI_API_ENABLED', 'false').lower() == 'true'
     logging.info(f"Meraki API Enabled: {meraki_api_enabled}")
 
@@ -65,9 +63,9 @@ def create_app(config_name='default'):
                 networks = dashboard.organizations.getOrganizationNetworks(org_id)
                 if networks:
                     network_id = networks[0]['id']
-                    if not verify_port_forwarding_rule(dashboard, network_id):
-                        add_port_forwarding_rule(dashboard, network_id)
-                update_splash_page_settings(dashboard, org_id, ssid_names)
+                    if not meraki_api.verify_port_forwarding_rule(dashboard, network_id):
+                        meraki_api.add_port_forwarding_rule(dashboard, network_id)
+                meraki_api.update_splash_page_settings(dashboard, org_id, ssid_names)
         else:
             logging.warning("Meraki API is enabled, but one or more required environment variables are missing.")
 

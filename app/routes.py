@@ -1,10 +1,13 @@
-from flask import Blueprint, render_template, request, redirect, url_for, current_app, session, flash
+import logging
+import ipaddress
+import os
+from datetime import datetime
+from flask import Blueprint, render_template, request, redirect, url_for, current_app, session, flash, send_from_directory
+from sqlalchemy import func
 from .models import Client, User, Profile
 from . import db
 from .forms import LoginForm, RegistrationForm, ProfileForm, ResetPasswordRequestForm, ResetPasswordForm
 from flask_login import current_user, login_user, logout_user, login_required
-import logging
-from datetime import datetime
 from .meraki_api import get_external_url, verify_port_forwarding_rule, verify_splash_page, get_meraki_clients
 from .meraki_dashboard import get_dashboard
 from .email import send_email
@@ -73,11 +76,6 @@ def connect():
     redirect_url = session.get('redirect_url', 'https://www.reddit.com')
     logging.info(f"Redirecting user to {redirect_url}")
     return redirect(redirect_url)
-
-import ipaddress
-import os
-
-from flask import send_from_directory
 
 @bp.before_request
 def restrict_admin_access():
@@ -199,8 +197,6 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('routes.login'))
     return render_template('register.html', title='Register', form=form)
-
-from sqlalchemy import func
 
 @bp.route('/chart-data')
 @login_required
