@@ -19,23 +19,23 @@ class AuthTestCase(unittest.TestCase):
     def test_register(self):
         with self.app.test_request_context():
             response = self.client.post(url_for('routes.register'), data={
-                'username': 'testuser',
+                'username': 'test@example.com',
                 'password': 'password',
             'password2': 'password'
         }, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        user = User.query.filter_by(username='testuser').first()
+        user = User.query.filter_by(username='test@example.com').first()
         self.assertIsNotNone(user)
         self.assertTrue(user.check_password('password'))
 
     def test_login_logout(self):
-        user = User(username='testuser')
+        user = User(username='test@example.com')
         user.set_password('password')
         db.session.add(user)
         db.session.commit()
         with self.app.test_request_context():
             response = self.client.post(url_for('routes.login'), data={
-                'username': 'testuser',
+                'username': 'test@example.com',
                 'password': 'password'
             }, follow_redirects=True)
             self.assertEqual(response.status_code, 200)
