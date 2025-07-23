@@ -15,7 +15,7 @@ if __name__ == "__main__":
         port = int(os.environ.get('PORT', 5001))
         debug = log_level == 'DEBUG'
         logging.info(f"Application running on port {port} with debug mode {'on' if debug else 'off'}")
-        app.run(host='0.0.0.0', port=port, debug=debug)
+        app.run(port=port, debug=debug)
     except Exception as e:
         logging.critical(f"Application failed to start: {e}", exc_info=True)
         exit(1)
