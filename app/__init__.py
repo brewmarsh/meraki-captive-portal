@@ -7,6 +7,7 @@ from flask_login import LoginManager
 from flask_caching import Cache
 from flask_mail import Mail
 from .meraki_dashboard import get_dashboard
+from .meraki_api import update_splash_page_settings, add_firewall_rule, add_port_forwarding_rule, verify_port_forwarding_rule
 
 db = SQLAlchemy()
 migrate = Migrate()
