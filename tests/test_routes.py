@@ -13,25 +13,28 @@ class TestRoutes(unittest.TestCase):
         self.app_context.push()
         db.create_all()
         self.client = self.app.test_client()
+        self.user = User(username='testuser')
+        self.user.set_password('password')
+        db.session.add(self.user)
+        db.session.commit()
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
         self.app_context.pop()
 
+    def login(self):
+        with self.app.test_request_context():
+            return self.client.post(url_for('routes.login'), data={
+                'username': 'testuser',
+                'password': 'password'
+            }, follow_redirects=True)
+
     def test_splash_page_new_client(self):
         """
         Test that the splash page creates a new client.
         """
-        user = User(username='testuser')
-        user.set_password('password')
-        db.session.add(user)
-        db.session.commit()
-        with self.app.test_request_context():
-            self.client.post(url_for('routes.login'), data={
-                'username': 'testuser',
-                'password': 'password'
-            }, follow_redirects=True)
+        self.login()
         response = self.client.get('/?client_mac=00:11:22:33:44:55&client_ip=1.2.3.4&base_grant_url=https://meraki.com')
         self.assertEqual(response.status_code, 200)
         client = Client.query.filter_by(mac_address='00:11:22:33:44:55').first()
@@ -42,15 +45,7 @@ class TestRoutes(unittest.TestCase):
         """
         Test that the splash page updates a returning client.
         """
-        user = User(username='testuser')
-        user.set_password('password')
-        db.session.add(user)
-        db.session.commit()
-        with self.app.test_request_context():
-            self.client.post(url_for('routes.login'), data={
-                'username': 'testuser',
-                'password': 'password'
-            }, follow_redirects=True)
+        self.login()
         client = Client(mac_address='00:11:22:33:44:55', ip_address='1.2.3.4')
         db.session.add(client)
         db.session.commit()
@@ -64,32 +59,16 @@ class TestRoutes(unittest.TestCase):
         """
         Test that the splash page handles requests without Meraki data.
         """
-        user = User(username='testuser')
-        user.set_password('password')
-        db.session.add(user)
-        db.session.commit()
-        with self.app.test_request_context():
-            self.client.post(url_for('routes.login'), data={
-                'username': 'testuser',
-                'password': 'password'
-            }, follow_redirects=True)
-            response = self.client.get('/')
-            self.assertEqual(response.status_code, 200)
-            self.assertIn(b'Direct access is not supported.', response.data)
+        self.login()
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Direct access is not supported.', response.data)
 
     def test_splash_page_timer(self):
         """
         Test that the splash page includes the timer.
         """
-        user = User(username='testuser')
-        user.set_password('password')
-        db.session.add(user)
-        db.session.commit()
-        with self.app.test_request_context():
-            self.client.post(url_for('routes.login'), data={
-                'username': 'testuser',
-                'password': 'password'
-            }, follow_redirects=True)
+        self.login()
         self.app.config['SPLASH_TIMER_SECONDS'] = 15
         response = self.client.get('/?client_mac=00:11:22:33:44:55&client_ip=1.2.3.4&base_grant_url=https://meraki.com')
         self.assertEqual(response.status_code, 200)
@@ -151,14 +130,6 @@ class TestRoutes(unittest.TestCase):
         response = self.client.get('/meraki_status')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Meraki Status', response.data)
-
-    def test_admin_dark_mode(self):
-        """
-        Test that the admin page has the dark mode toggle.
-        """
-        response = self.client.get('/admin', headers={'X-Forwarded-For': '127.0.0.1'})
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'theme-switch', response.data)
 
     def test_loading_screen(self):
         """

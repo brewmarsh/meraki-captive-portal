@@ -27,6 +27,7 @@ class AuthTestCase(unittest.TestCase):
         user = User.query.filter_by(username='test@example.com').first()
         self.assertIsNotNone(user)
         self.assertTrue(user.check_password('password'))
+        self.assertIsNotNone(user.profile)
 
     def test_login_logout(self):
         user = User(username='test@example.com')
@@ -39,5 +40,6 @@ class AuthTestCase(unittest.TestCase):
                 'password': 'password'
             }, follow_redirects=True)
             self.assertEqual(response.status_code, 200)
+            self.assertIn(b'Admin Dashboard', response.data)
             response = self.client.get(url_for('routes.logout'), follow_redirects=True)
             self.assertEqual(response.status_code, 200)

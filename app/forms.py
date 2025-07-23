@@ -22,3 +22,17 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(username=email.data).first()
         if user is not None:
             raise ValidationError('Please use a different email address.')
+
+class ProfileForm(FlaskForm):
+    dark_mode = BooleanField('Enable Dark Mode')
+    submit = SubmitField('Save Changes')
+
+class ResetPasswordRequestForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Request Password Reset')
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('Password', validators=[DataRequired()])
+    password2 = PasswordField(
+        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Request Password Reset')

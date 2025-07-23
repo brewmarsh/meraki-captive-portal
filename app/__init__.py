@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_caching import Cache
+from flask_mail import Mail
 import os
 import logging
 
@@ -11,6 +12,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 login = LoginManager()
 cache = Cache()
+mail = Mail()
 
 from .meraki_api import update_splash_page_settings, add_firewall_rule, add_port_forwarding_rule, verify_port_forwarding_rule
 from .meraki_dashboard import get_dashboard
@@ -21,25 +23,16 @@ def create_app(config_name='default'):
     app = Flask(__name__)
 
     if config_name == 'testing':
-        app.config['TESTING'] = True
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-        app.config['SECRET_KEY'] = 'test-secret-key'
-        app.config['WTF_CSRF_ENABLED'] = False
-        app.config['CACHE_TYPE'] = 'null'
+        app.config.from_object('app.config.TestingConfig')
     else:
-        app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev')
-        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///app.db')
-
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['CACHE_TYPE'] = 'simple'
-    app.config['CACHE_DEFAULT_TIMEOUT'] = 300
-    app.config['CACHE_KEY_PREFIX'] = 'fcache'
+        app.config.from_object('app.config.Config')
 
     logging.info("Initializing database")
     db.init_app(app)
     migrate.init_app(app, db)
     login.init_app(app)
     cache.init_app(app)
+    mail.init_app(app)
     login.login_view = 'routes.login'
 
     from . import routes
