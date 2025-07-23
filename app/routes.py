@@ -263,6 +263,10 @@ def meraki_status():
 @bp.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
+    if current_user.profile is None:
+        profile = Profile(user_id=current_user.id)
+        db.session.add(profile)
+        db.session.commit()
     form = ProfileForm()
     if form.validate_on_submit():
         current_user.profile.dark_mode = form.dark_mode.data
