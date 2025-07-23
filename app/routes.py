@@ -51,7 +51,8 @@ def splash():
             session['redirect_url'] = redirect_url
             logging.info(f"Stored redirect URL in session: {redirect_url}")
 
-            return render_template('splash.html')
+            timer_duration = current_app.config.get('SPLASH_TIMER_SECONDS', 10)
+            return render_template('splash.html', timer_duration=timer_duration)
         else:
             # If Meraki data is not present, it might be a direct access attempt.
             logging.warning("Direct access to splash page without Meraki data")

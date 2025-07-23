@@ -19,10 +19,10 @@ class AuthTestCase(unittest.TestCase):
     def test_register(self):
         with self.app.test_request_context():
             response = self.client.post(url_for('routes.register'), data={
-                'username': 'test@example.com',
+                'email': 'test@example.com',
                 'password': 'password',
-            'password2': 'password'
-        }, follow_redirects=True)
+                'password2': 'password'
+            }, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         user = User.query.filter_by(username='test@example.com').first()
         self.assertIsNotNone(user)

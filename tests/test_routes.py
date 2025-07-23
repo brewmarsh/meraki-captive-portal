@@ -77,6 +77,24 @@ class TestRoutes(unittest.TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertIn(b'Direct access is not supported.', response.data)
 
+    def test_splash_page_timer(self):
+        """
+        Test that the splash page includes the timer.
+        """
+        user = User(username='testuser')
+        user.set_password('password')
+        db.session.add(user)
+        db.session.commit()
+        with self.app.test_request_context():
+            self.client.post(url_for('routes.login'), data={
+                'username': 'testuser',
+                'password': 'password'
+            }, follow_redirects=True)
+        self.app.config['SPLASH_TIMER_SECONDS'] = 15
+        response = self.client.get('/?client_mac=00:11:22:33:44:55&client_ip=1.2.3.4&base_grant_url=https://meraki.com')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'let timeLeft = 15;', response.data)
+
     def test_connect_with_redirect_url(self):
         """
         Test that the connect route redirects to the URL stored in the session.
@@ -133,6 +151,22 @@ class TestRoutes(unittest.TestCase):
         response = self.client.get('/meraki_status')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Meraki Status', response.data)
+
+    def test_admin_dark_mode(self):
+        """
+        Test that the admin page has the dark mode toggle.
+        """
+        response = self.client.get('/admin', headers={'X-Forwarded-For': '127.0.0.1'})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'theme-switch', response.data)
+
+    def test_loading_screen(self):
+        """
+        Test that the loading screen is present.
+        """
+        response = self.client.get('/admin', headers={'X-Forwarded-For': '127.0.0.1'})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'<div class="loader"></div>', response.data)
 
 if __name__ == '__main__':
     unittest.main()
